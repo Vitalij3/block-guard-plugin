@@ -18,3 +18,6 @@ When you first start the server with the plugin, a configuration file will appea
 
 ### Description of the config parameters
 - `databaseFileName: name.db` - determines the name of the database. **_IMPORTANT!_** _At the end of the name there must be an extension of the **.db**_
+
+# Assembly of the project
+_**[Download maven](https://maven.apache.org/download.cgi)**_ and write `mvn package` in the [project folder](https://github.com/Vitalij3/block-guard-plugin.git). A folder with the name _**"target"**_ will appear, there should be a file with the extension **_.jar_** - this is the plugin
