@@ -1,6 +1,10 @@
 # Information
 This is a **Spigot** plugin for minecraft servers, the purpose of which is to protect the buildings of other players **automatically**
 
+# Version
+Currently the supported version is **_1.12.2_**. If you are an advanced user who understands what he is doing, you can change the version of the api in **_[plugin.yml](src/main/resources/plugin.yml)_** and in **_[pom.xml](pom.xml)_**
+
+
 # Commands
 The latest version of the plugin so far adds 3 commands, the use of which you can read in the game itself or below
 
