@@ -7,6 +7,7 @@ import me.salatosik.blockguardplugin.listeners.PlayerGuardAdditionListener;
 import me.salatosik.blockguardplugin.listeners.PlayerGuardRemoverListener;
 import me.salatosik.blockguardplugin.listeners.PlayerMagicStickListener;
 import me.salatosik.blockguardplugin.util.GeneralDatabase;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -18,8 +19,14 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if(getConfig().get("databaseFileName") == null) getConfig().set("databaseFileName", "salatosik-plugin-database.db");
+        FileConfiguration config = getConfig();
+        if(config.get("databaseFileName") == null) config.set("databaseFileName", "salatosik-plugin-database.db");
+        if(config.get("allowsInWorlds.world") == null) config.set("allowsInWorlds.world", true);
+        if(config.get("allowsInWorlds.nether") == null) config.set("allowsInWorlds.nether", false);
+        if(config.get("allowsInWorlds.ender") == null) config.set("allowsInWorlds.ender", false);
         saveConfig();
+
+        Vars.initAllows(config.getBoolean("allowsInWorlds.world"), config.getBoolean("allowsInWorlds.nether"), config.getBoolean("allowsInWorlds.ender"));
 
         File databaseFile = new File(getDataFolder(), (String) getConfig().get("databaseFileName"));
         database = new GeneralDatabase(databaseFile);
@@ -28,6 +35,7 @@ public class Main extends JavaPlugin {
             this.getPluginLoader().disablePlugin(this);
             return;
         }
+
 
         getLogger().info("Database loaded! Path: \"" + databaseFile.getAbsolutePath() + "\", do not forget that the name of the database can be changed in \"config.yml\"");
 

@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.listeners;
 
+import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.util.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -27,9 +28,15 @@ public class PlayerMagicStickListener implements Listener {
     @EventHandler
     public void onMagicStickUsed(PlayerInteractEvent event) {
         if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) & event.hasItem() && MagicItem.BLOCK_PICKER.equals(event.getItem())) {
+            event.setCancelled(true);
+            Player eventPlayer = event.getPlayer();
+
+            if(!Vars.verifyWorld(event.getClickedBlock().getWorld())) {
+                eventPlayer.sendMessage(ChatColor.RED + "You cannot use this item in this world.");
+                return;
+            }
 
             Block block = event.getClickedBlock();
-            Player eventPlayer = event.getPlayer();
 
             for(PlayerBlock playerBlock: playerBlocks) {
                 if(playerBlock.equals(new PlayerBlock(block.getX(), block.getY(), block.getZ(), eventPlayer.getUniqueId().toString()))) {

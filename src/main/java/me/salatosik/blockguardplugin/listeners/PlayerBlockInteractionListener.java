@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.listeners;
 
+import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
 import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import org.bukkit.ChatColor;
@@ -10,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -60,12 +62,14 @@ public class PlayerBlockInteractionListener implements Listener {
 
     private boolean checkForRight(PlayerBlock playerBlock) {
         for(PlayerBlock block: allPlayerBlocks) if(block.equals(playerBlock)) return false;
-        for(PlayerBlock block: allPlayerBlocks) if(block.x == playerBlock.x & block.y == playerBlock.y & block.z == playerBlock.z) return true;
+        for(PlayerBlock block: allPlayerBlocks) if(block.equalsIgnoreUuid(playerBlock)) return true;
         return false;
     }
 
     @EventHandler
     public void onPlayerPlacedBlockIn(PlayerInteractEvent event) {
+        if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !Vars.verifyWorld(event.getClickedBlock().getWorld())) return;
+
         if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !event.getClickedBlock().isEmpty()) {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
@@ -84,6 +88,8 @@ public class PlayerBlockInteractionListener implements Listener {
 
     @EventHandler
     public void onPlayerPlaceBlock(BlockPlaceEvent event) {
+        if(!Vars.verifyWorld((event.getBlock().getWorld()))) return;
+
         if(!PLAYERS_TURNED_OFF.contains(event.getPlayer().getUniqueId().toString())) {
             PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString());
             if(!PlayerBlock.search(playerBlock, playerBlocks)) playerBlocks.add(playerBlock);
@@ -93,6 +99,8 @@ public class PlayerBlockInteractionListener implements Listener {
 
     @EventHandler
     public void onPlayerBreaksEvent(BlockBreakEvent event) {
+        if(!Vars.verifyWorld((event.getBlock().getWorld()))) return;
+
         PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString());
 
         if(checkForRight(playerBlock)) {
@@ -103,6 +111,14 @@ public class PlayerBlockInteractionListener implements Listener {
             allPlayerBlocks.removeIf(pb -> pb.equals(playerBlock));
             playerBlocks.removeIf(pb -> pb.equals(playerBlock));
             removedPlayerBlocks.add(playerBlock);
+        }
+    }
+
+
+    @EventHandler
+    public void onPlayerWorldTeleported(PlayerChangedWorldEvent event) {
+        if(Vars.verifyWorld((event.getFrom()))) {
+            event.getPlayer().sendMessage(ChatColor.RED + "In this world, you cannot protect your blocks. Be careful.");
         }
     }
 }

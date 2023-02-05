@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.listeners;
 
+import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.util.MagicItem;
 import me.salatosik.blockguardplugin.util.PlayerBlock;
 import org.bukkit.ChatColor;
@@ -23,8 +24,15 @@ public class PlayerGuardAdditionListener implements Listener {
     @EventHandler
     public void onItemRightClick(PlayerInteractEvent event) {
         if(event.hasItem() && MagicItem.GUARD_ADDITION.equals(event.getItem())) {
-            Block block = event.getClickedBlock();
+            event.setCancelled(true);
             Player player = event.getPlayer();
+
+            if(!Vars.verifyWorld(event.getClickedBlock().getWorld())) {
+                player.sendMessage(ChatColor.RED + "You cannot use this item in this world.");
+                return;
+            }
+
+            Block block = event.getClickedBlock();
             PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), event.getPlayer().getUniqueId().toString());
 
             if(PlayerBlock.searchIgnoreUuid(playerBlock, allBlockPlayers)) {
