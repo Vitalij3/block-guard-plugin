@@ -54,6 +54,10 @@ public class PlayerBlockInteractionListener implements Listener {
         return removedPlayerBlocks;
     }
 
+    public List<PlayerBlock> getPlayerBlocks() {
+        return playerBlocks;
+    }
+
     private boolean checkForRight(PlayerBlock playerBlock) {
         for(PlayerBlock block: allPlayerBlocks) if(block.equals(playerBlock)) return false;
         for(PlayerBlock block: allPlayerBlocks) if(block.x == playerBlock.x & block.y == playerBlock.y & block.z == playerBlock.z) return true;

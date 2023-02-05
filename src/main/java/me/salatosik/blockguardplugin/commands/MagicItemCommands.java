@@ -44,6 +44,10 @@ public class MagicItemCommands implements CommandExecutor {
                 case "give-guard-remover":
                     give(player, MagicItem.GUARD_REMOVER);
                     break;
+
+                case "give-guard-addition":
+                    give(player, MagicItem.GUARD_ADDITION);
+                    break;
             }
         }
 

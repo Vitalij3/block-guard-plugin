@@ -23,3 +23,9 @@ commands:
     usage: /command
     aliases:
       - ggr
+
+  give-guard-addition:
+    description: Gives an item that when clicked on a block gives protection
+    usage: /command
+    aliases:
+      - gga

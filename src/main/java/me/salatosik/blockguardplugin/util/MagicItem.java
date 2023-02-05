@@ -8,8 +8,8 @@ import java.util.Collections;
 
 public enum MagicItem {
     BLOCK_PICKER(1, "Magic stick", "magic-stick", Material.STICK),
-    GUARD_REMOVER(1, "Guard remover", "guard-remover", Material.SLIME_BALL),
-    GUARD_ADDITION(1, "Guard addition", "guard-addition", Material.TORCH);
+    GUARD_REMOVER(1, "Guard remover", "guard-remover", Material.BARRIER),
+    GUARD_ADDITION(1, "Guard addition", "guard-addition", Material.SLIME_BALL);
 
     private final int count;
     private final String name, lore;
