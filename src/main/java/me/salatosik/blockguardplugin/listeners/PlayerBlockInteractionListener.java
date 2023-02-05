@@ -5,12 +5,14 @@ import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
 import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -114,11 +116,44 @@ public class PlayerBlockInteractionListener implements Listener {
         }
     }
 
-
     @EventHandler
     public void onPlayerWorldTeleported(PlayerChangedWorldEvent event) {
         if(Vars.verifyWorld((event.getFrom()))) {
             event.getPlayer().sendMessage(ChatColor.RED + "In this world, you cannot protect your blocks. Be careful.");
+        }
+    }
+
+    private <E extends BlockPistonEvent> boolean protectBlock(List<Block> movedBlocks) {
+        for(Block block: movedBlocks) {
+            PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
+            if(PlayerBlock.searchIgnoreUuid(playerBlock, allPlayerBlocks)) return true;
+        }
+
+        return false;
+    }
+
+    @EventHandler
+    public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+        if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
+        if(protectBlock(event.getBlocks())) event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+        if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
+        if(protectBlock(event.getBlocks())) event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPhysicBlock(EntityChangeBlockEvent event) {
+        if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
+        Block block = event.getBlock();
+        PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
+
+        if(PlayerBlock.searchIgnoreUuid(playerBlock, allPlayerBlocks)) {
+            removedPlayerBlocks.add(playerBlock);
+            allPlayerBlocks.removeIf(b -> b.equalsIgnoreUuid(playerBlock));
+            playerBlocks.removeIf(b -> b.equalsIgnoreUuid(playerBlock));
         }
     }
 }

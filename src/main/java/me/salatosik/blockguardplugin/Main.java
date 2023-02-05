@@ -36,7 +36,6 @@ public class Main extends JavaPlugin {
             return;
         }
 
-
         getLogger().info("Database loaded! Path: \"" + databaseFile.getAbsolutePath() + "\", do not forget that the name of the database can be changed in \"config.yml\"");
 
         DisableAddingBlocksCommand disableAddingBlocksCommand = new DisableAddingBlocksCommand();
