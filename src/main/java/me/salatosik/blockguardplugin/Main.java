@@ -1,8 +1,7 @@
 package me.salatosik.blockguardplugin;
 
 import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
-import me.salatosik.blockguardplugin.commands.BlockPickerCommand;
-import me.salatosik.blockguardplugin.commands.GuardRemoverCommand;
+import me.salatosik.blockguardplugin.commands.MagicItemCommands;
 import me.salatosik.blockguardplugin.listeners.PlayerBlockInteractionListener;
 import me.salatosik.blockguardplugin.listeners.PlayerGuardRemoverListener;
 import me.salatosik.blockguardplugin.listeners.PlayerMagicStickListener;
@@ -38,8 +37,10 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerMagicStickListener(playerBlockInteractionListener.getAllPlayerBlocks(), this), this);
         getServer().getPluginManager().registerEvents(new PlayerGuardRemoverListener(playerBlockInteractionListener.getAllPlayerBlocks(), playerBlockInteractionListener.getRemovedPlayerBlocks()), this);
 
-        getServer().getPluginCommand("give-block-picker").setExecutor(new BlockPickerCommand());
-        getServer().getPluginCommand("give-guard-remover").setExecutor(new GuardRemoverCommand());
+        MagicItemCommands magicItemCommands = new MagicItemCommands();
+
+        getServer().getPluginCommand("give-block-picker").setExecutor(magicItemCommands);
+        getServer().getPluginCommand("give-guard-remover").setExecutor(magicItemCommands);
         getServer().getPluginCommand("disable-block-adding").setExecutor(disableAddingBlocksCommand);
         getServer().getPluginCommand("disable-block-adding").setTabCompleter((commandSender, command, s, strings) -> Arrays.asList("enable", "disable"));
     }

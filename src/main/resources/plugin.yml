@@ -8,6 +8,7 @@ main: me.salatosik.blockguardplugin.Main
 commands:
   give-block-picker:
     description: Gives the magic stick
+    usage: /command
     aliases:
       - gbp
 
@@ -18,6 +19,7 @@ commands:
       - dbd
 
   give-guard-remover:
-    description: removes block protection
+    description: Removes block protection
+    usage: /command
     aliases:
       - ggr

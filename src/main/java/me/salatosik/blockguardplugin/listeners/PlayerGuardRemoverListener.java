@@ -20,25 +20,14 @@ public class PlayerGuardRemoverListener implements Listener {
         this.removePlayerBlocks = removePlayerBlocks;
     }
 
-    private boolean searchPlayerBlock(Block block) {
-        for(PlayerBlock playerBlock: allPlayerBlocks) {
-            if(playerBlock.x == block.getX() & playerBlock.y == block.getY() & playerBlock.z == block.getZ()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @EventHandler
     public void onGuardRemoverInteraction(PlayerInteractEvent event) {
         if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) & event.hasItem() && MagicItem.GUARD_REMOVER.equals(event.getItem())) {
             Player player = event.getPlayer();
             Block block = event.getClickedBlock();
+            PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), player.getUniqueId().toString());
 
-            if(searchPlayerBlock(block)) {
-                PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), player.getUniqueId().toString());
-
+            if(PlayerBlock.searchIgnoreUuid(playerBlock, allPlayerBlocks)) {
                 for(PlayerBlock b: allPlayerBlocks) {
                     if(b.equals(playerBlock)) {
                         allPlayerBlocks.removeIf(pb -> pb.equals(b));
