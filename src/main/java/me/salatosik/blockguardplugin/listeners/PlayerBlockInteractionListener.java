@@ -128,7 +128,7 @@ public class PlayerBlockInteractionListener implements Listener {
 
     private final Plugin plugin;
 
-    private static final Material DESTRUCTIVE_FORCES[] = {
+    private static final Material[] DESTRUCTIVE_FORCES = {
             Material.STONE_BUTTON,
             Material.WOOD_BUTTON,
             Material.LEVER,
@@ -138,7 +138,7 @@ public class PlayerBlockInteractionListener implements Listener {
             Material.WOOD_PLATE
     };
 
-    private static final Material DESTRUCTIVE[] = {
+    private static final Material[] DESTRUCTIVE = {
             Material.WATER,
             Material.STATIONARY_WATER,
             Material.LAVA,
