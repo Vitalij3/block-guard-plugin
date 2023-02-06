@@ -1,6 +1,7 @@
 package me.salatosik.blockguardplugin.listeners;
 
 import me.salatosik.blockguardplugin.Vars;
+import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import me.salatosik.blockguardplugin.util.MagicItem;
 import me.salatosik.blockguardplugin.util.PlayerBlock;
 import org.bukkit.ChatColor;
@@ -10,16 +11,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.List;
-
 public class PlayerGuardAdditionListener implements Listener {
 
-    public PlayerGuardAdditionListener(List<PlayerBlock> allBlockPlayers, List<PlayerBlock> blockPlayers) {
-        this.allBlockPlayers = allBlockPlayers;
-        this.blockPlayers = blockPlayers;
+    public PlayerGuardAdditionListener(GeneralDatabase database) {
+        this.database = database;
     }
 
-    private final List<PlayerBlock> allBlockPlayers, blockPlayers;
+    private final GeneralDatabase database;
 
     @EventHandler
     public void onItemRightClick(PlayerInteractEvent event) {
@@ -35,13 +33,12 @@ public class PlayerGuardAdditionListener implements Listener {
             Block block = event.getClickedBlock();
             PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), event.getPlayer().getUniqueId().toString());
 
-            if(PlayerBlock.searchIgnoreUuid(playerBlock, allBlockPlayers)) {
+            if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) {
                 player.sendMessage(ChatColor.YELLOW + "This block already belongs to someone.");
                 return;
             }
 
-            allBlockPlayers.add(playerBlock);
-            blockPlayers.add(playerBlock);
+            database.addPlayerBlock(playerBlock);
             player.sendMessage(ChatColor.GREEN + "This block is now yours!");
         }
     }

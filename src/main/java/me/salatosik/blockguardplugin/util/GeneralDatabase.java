@@ -3,7 +3,9 @@ package me.salatosik.blockguardplugin.util;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class GeneralDatabase {
     private Connection connection;
@@ -38,30 +40,31 @@ public class GeneralDatabase {
         if(execute) statement.execute();
     }
 
-    public <L extends Collection<PlayerBlock>> void addBlocks(L blocks) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement("INSERT INTO blocks (x, y, z, uuid) VALUES(?, ?, ?, ?)")) {
-            for(PlayerBlock playerBlock: blocks) {
-                putBlockValues(playerBlock, statement, true);
-            }
-        }
-    }
+    public List<PlayerBlock> getPlayerBlocks() {
+        List<PlayerBlock> playerBlocks = new ArrayList<>();
 
-    public <L extends Collection<PlayerBlock>> void putPlayerBlocks(L list) throws SQLException {
         try(Statement statement = connection.createStatement()) {
             try(ResultSet resultSet = statement.executeQuery("SELECT * FROM blocks")) {
                 while(resultSet.next()) {
                     PlayerBlock playerBlock = new PlayerBlock(resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"), resultSet.getString("uuid"));
-                    list.add(playerBlock);
+                    playerBlocks.add(playerBlock);
                 }
             }
-        }
+
+        } catch(SQLException exception) { exception.printStackTrace(); }
+
+        return playerBlocks;
     }
 
-    public <L extends Collection<PlayerBlock>> void removePlayerBlocks(L list) throws SQLException {
+    public void addPlayerBlock(PlayerBlock playerBlock) {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO blocks (x, y, z, uuid) VALUES(?, ?, ?, ?)")) {
+            putBlockValues(playerBlock, preparedStatement, true);
+        } catch(SQLException exception) { exception.printStackTrace(); }
+    }
+
+    public void removePlayerBlock(PlayerBlock playerBlock) {
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM blocks WHERE x = ? AND y = ? AND z = ? AND uuid = ?")) {
-            for(PlayerBlock playerBlock: list) {
-                putBlockValues(playerBlock, preparedStatement, true);
-            }
-        }
+            putBlockValues(playerBlock, preparedStatement, true);
+        } catch(SQLException exception) { exception.printStackTrace(); }
     }
 }

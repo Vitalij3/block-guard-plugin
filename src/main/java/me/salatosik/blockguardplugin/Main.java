@@ -24,9 +24,10 @@ public class Main extends JavaPlugin {
         if(config.get("allowsInWorlds.world") == null) config.set("allowsInWorlds.world", true);
         if(config.get("allowsInWorlds.nether") == null) config.set("allowsInWorlds.nether", false);
         if(config.get("allowsInWorlds.ender") == null) config.set("allowsInWorlds.ender", false);
+        if(config.get("defaultValues.disableAutoAddBlockCommand") == null) config.set("defaultValues.disableAutoAddBlockCommand", true);
         saveConfig();
 
-        Vars.initAllows(config.getBoolean("allowsInWorlds.world"), config.getBoolean("allowsInWorlds.nether"), config.getBoolean("allowsInWorlds.ender"));
+        Vars.init(config);
 
         File databaseFile = new File(getDataFolder(), (String) getConfig().get("databaseFileName"));
         database = new GeneralDatabase(databaseFile);
@@ -42,9 +43,9 @@ public class Main extends JavaPlugin {
         PlayerBlockInteractionListener playerBlockInteractionListener = new PlayerBlockInteractionListener(database, this, disableAddingBlocksCommand);
 
         getServer().getPluginManager().registerEvents(playerBlockInteractionListener, this);
-        getServer().getPluginManager().registerEvents(new PlayerMagicStickListener(playerBlockInteractionListener.getAllPlayerBlocks(), this), this);
-        getServer().getPluginManager().registerEvents(new PlayerGuardRemoverListener(playerBlockInteractionListener.getAllPlayerBlocks(), playerBlockInteractionListener.getRemovedPlayerBlocks()), this);
-        getServer().getPluginManager().registerEvents(new PlayerGuardAdditionListener(playerBlockInteractionListener.getAllPlayerBlocks(), playerBlockInteractionListener.getPlayerBlocks()), this);
+        getServer().getPluginManager().registerEvents(new PlayerMagicStickListener(database, this), this);
+        getServer().getPluginManager().registerEvents(new PlayerGuardRemoverListener(database), this);
+        getServer().getPluginManager().registerEvents(new PlayerGuardAdditionListener(database), this);
 
         MagicItemCommands magicItemCommands = new MagicItemCommands();
 

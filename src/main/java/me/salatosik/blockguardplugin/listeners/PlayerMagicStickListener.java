@@ -1,6 +1,7 @@
 package me.salatosik.blockguardplugin.listeners;
 
 import me.salatosik.blockguardplugin.Vars;
+import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import me.salatosik.blockguardplugin.util.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -13,16 +14,15 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import me.salatosik.blockguardplugin.util.PlayerBlock;
 
-import java.util.List;
 import java.util.UUID;
 
 public class PlayerMagicStickListener implements Listener {
-    private final List<PlayerBlock> playerBlocks;
     private final JavaPlugin plugin;
+    private final GeneralDatabase database;
 
-    public PlayerMagicStickListener(List<PlayerBlock> playerBlocks, JavaPlugin plugin) {
-        this.playerBlocks = playerBlocks;
+    public PlayerMagicStickListener(GeneralDatabase database, JavaPlugin plugin) {
         this.plugin = plugin;
+        this.database = database;
     }
 
     @EventHandler
@@ -38,7 +38,7 @@ public class PlayerMagicStickListener implements Listener {
 
             Block block = event.getClickedBlock();
 
-            for(PlayerBlock playerBlock: playerBlocks) {
+            for(PlayerBlock playerBlock: database.getPlayerBlocks()) {
                 if(playerBlock.equals(new PlayerBlock(block.getX(), block.getY(), block.getZ(), eventPlayer.getUniqueId().toString()))) {
                     OfflinePlayer player = plugin.getServer().getOfflinePlayer(UUID.fromString(playerBlock.uuid));
 

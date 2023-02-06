@@ -4,67 +4,34 @@ import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
 import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import me.salatosik.blockguardplugin.util.PlayerBlock;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerBlockInteractionListener implements Listener {
     public PlayerBlockInteractionListener(GeneralDatabase database, JavaPlugin plugin, DisableAddingBlocksCommand disableAddingBlocksCommand) {
-        BukkitRunnable bukkitRunnable = new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                try {
-                    database.addBlocks(playerBlocks);
-                    playerBlocks.clear();
-
-                    database.removePlayerBlocks(removedPlayerBlocks);
-                    removedPlayerBlocks.clear();
-
-                } catch (SQLException exception) {
-                    exception.printStackTrace();
-                }
-
-            }
-        };
-        bukkitRunnable.runTaskTimer(plugin, 150, 150);
-
-        try { database.putPlayerBlocks(allPlayerBlocks); } catch(SQLException exception) { exception.printStackTrace(); }
-        this.PLAYERS_TURNED_OFF = disableAddingBlocksCommand.PLAYERS_TURNED_OFF;
+        this.PLAYERS_TURNED_OFF = disableAddingBlocksCommand.PLAYERS_TURNED_ON;
+        this.plugin = plugin;
+        this.database = database;
     }
 
-    private final List<PlayerBlock> playerBlocks = new ArrayList<>(), allPlayerBlocks = new ArrayList<>(), removedPlayerBlocks = new ArrayList<>();
-
-    public List<PlayerBlock> getAllPlayerBlocks() {
-        return allPlayerBlocks;
-    }
-
-    public List<PlayerBlock> getRemovedPlayerBlocks() {
-        return removedPlayerBlocks;
-    }
-
-    public List<PlayerBlock> getPlayerBlocks() {
-        return playerBlocks;
-    }
+    private final GeneralDatabase database;
 
     private boolean checkForRight(PlayerBlock playerBlock) {
-        for(PlayerBlock block: allPlayerBlocks) if(block.equals(playerBlock)) return false;
-        for(PlayerBlock block: allPlayerBlocks) if(block.equalsIgnoreUuid(playerBlock)) return true;
+        List<PlayerBlock> playerBlocks = database.getPlayerBlocks();
+        for(PlayerBlock block: playerBlocks) if(block.equals(playerBlock)) return false;
+        for(PlayerBlock block: playerBlocks) if(block.equalsIgnoreUuid(playerBlock)) return true;
         return false;
     }
 
@@ -76,7 +43,7 @@ public class PlayerBlockInteractionListener implements Listener {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
 
-            for(PlayerBlock playerBlock: allPlayerBlocks) {
+            for(PlayerBlock playerBlock: database.getPlayerBlocks()) {
                 if(playerBlock.x == block.getX() & playerBlock.y == block.getY() & playerBlock.z == block.getZ() && !playerBlock.uuid.equals(player.getUniqueId().toString())) {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.YELLOW + "You can't put a block here.");
@@ -91,11 +58,11 @@ public class PlayerBlockInteractionListener implements Listener {
     @EventHandler
     public void onPlayerPlaceBlock(BlockPlaceEvent event) {
         if(!Vars.verifyWorld((event.getBlock().getWorld()))) return;
+        if(event.getBlock().getType().equals(Material.FIRE)) return;
 
-        if(!PLAYERS_TURNED_OFF.contains(event.getPlayer().getUniqueId().toString())) {
+        if(PLAYERS_TURNED_OFF.contains(event.getPlayer().getUniqueId().toString())) {
             PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString());
-            if(!PlayerBlock.search(playerBlock, playerBlocks)) playerBlocks.add(playerBlock);
-            if(!PlayerBlock.search(playerBlock, allPlayerBlocks)) allPlayerBlocks.add(playerBlock);
+            if(!PlayerBlock.search(playerBlock, database.getPlayerBlocks())) database.addPlayerBlock(playerBlock);
         }
     }
 
@@ -109,11 +76,7 @@ public class PlayerBlockInteractionListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You can't hack this block.");
 
-        } else {
-            allPlayerBlocks.removeIf(pb -> pb.equals(playerBlock));
-            playerBlocks.removeIf(pb -> pb.equals(playerBlock));
-            removedPlayerBlocks.add(playerBlock);
-        }
+        } else database.removePlayerBlock(playerBlock);
     }
 
     @EventHandler
@@ -123,10 +86,10 @@ public class PlayerBlockInteractionListener implements Listener {
         }
     }
 
-    private <E extends BlockPistonEvent> boolean protectBlock(List<Block> movedBlocks) {
+    private boolean protectBlock(List<Block> movedBlocks) {
         for(Block block: movedBlocks) {
             PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
-            if(PlayerBlock.searchIgnoreUuid(playerBlock, allPlayerBlocks)) return true;
+            if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) return true;
         }
 
         return false;
@@ -150,10 +113,67 @@ public class PlayerBlockInteractionListener implements Listener {
         Block block = event.getBlock();
         PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
 
-        if(PlayerBlock.searchIgnoreUuid(playerBlock, allPlayerBlocks)) {
-            removedPlayerBlocks.add(playerBlock);
-            allPlayerBlocks.removeIf(b -> b.equalsIgnoreUuid(playerBlock));
-            playerBlocks.removeIf(b -> b.equalsIgnoreUuid(playerBlock));
+        if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) {
+            database.removePlayerBlock(playerBlock);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBurning(BlockBurnEvent event) {
+        if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
+        Block block = event.getBlock();
+        PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
+        if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) event.setCancelled(true);
+    }
+
+    private final Plugin plugin;
+
+    private static final Material DESTRUCTIVE_FORCES[] = {
+            Material.STONE_BUTTON,
+            Material.WOOD_BUTTON,
+            Material.LEVER,
+            Material.GOLD_PLATE,
+            Material.IRON_PLATE,
+            Material.STONE_PLATE,
+            Material.WOOD_PLATE
+    };
+
+    private static final Material DESTRUCTIVE[] = {
+            Material.WATER,
+            Material.STATIONARY_WATER,
+            Material.LAVA,
+            Material.STATIONARY_LAVA,
+            Material.AIR
+    };
+
+    @EventHandler
+    public void onBlockFromTo(BlockFromToEvent event) {
+        Material blockType = event.getBlock().getType();
+
+        for(Material d: DESTRUCTIVE) {
+            if(d.equals(blockType)) {
+                Material toBlockMaterial = event.getToBlock().getType();
+                Block toBlock = event.getToBlock();
+
+                for(Material df: DESTRUCTIVE_FORCES) {
+                    if(df.equals(toBlockMaterial)) {
+                        PlayerBlock toPlayerBlock = new PlayerBlock(toBlock.getX(), toBlock.getY(), toBlock.getZ(), null);
+
+                        for(PlayerBlock playerBlock: database.getPlayerBlocks()) {
+                            if(playerBlock.equalsIgnoreUuid(toPlayerBlock)) {
+
+                                // delete from the database or set cancelled value "true"
+                                event.setCancelled(true);
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+                break;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package me.salatosik.blockguardplugin.listeners;
 
 import me.salatosik.blockguardplugin.Vars;
+import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import me.salatosik.blockguardplugin.util.MagicItem;
 import me.salatosik.blockguardplugin.util.PlayerBlock;
 import org.bukkit.ChatColor;
@@ -14,12 +15,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.List;
 
 public class PlayerGuardRemoverListener implements Listener {
-    private final List<PlayerBlock> allPlayerBlocks, removePlayerBlocks;
-
-    public PlayerGuardRemoverListener(List<PlayerBlock> allPlayerBlocks, List<PlayerBlock> removePlayerBlocks) {
-        this.allPlayerBlocks = allPlayerBlocks;
-        this.removePlayerBlocks = removePlayerBlocks;
+    public PlayerGuardRemoverListener(GeneralDatabase database) {
+        this.database = database;
     }
+
+    private final GeneralDatabase database;
 
     @EventHandler
     public void onGuardRemoverInteraction(PlayerInteractEvent event) {
@@ -34,12 +34,12 @@ public class PlayerGuardRemoverListener implements Listener {
 
             Block block = event.getClickedBlock();
             PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), player.getUniqueId().toString());
+            List<PlayerBlock> allPlayerBlocks = database.getPlayerBlocks();
 
             if(PlayerBlock.searchIgnoreUuid(playerBlock, allPlayerBlocks)) {
                 for(PlayerBlock b: allPlayerBlocks) {
                     if(b.equals(playerBlock)) {
-                        allPlayerBlocks.removeIf(pb -> pb.equals(b));
-                        removePlayerBlocks.add(playerBlock);
+                        database.removePlayerBlock(playerBlock);
                         player.sendMessage(ChatColor.GREEN + "Block guard removed!");
                         return;
                     }
