@@ -12,7 +12,7 @@ import java.util.List;
 public class DisableAddingBlocksCommand implements CommandExecutor {
 
     // uuid-s
-    public final List<String> PLAYERS_TURNED_ON = new ArrayList<>();
+    public final List<String> PLAYERS_TURNED_OFF = new ArrayList<>();
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
@@ -22,16 +22,16 @@ public class DisableAddingBlocksCommand implements CommandExecutor {
 
             switch(args[0].toLowerCase()) {
                 case "enable":
-                    if(!PLAYERS_TURNED_ON.contains(uuidString)) {
-                        PLAYERS_TURNED_ON.removeIf(uuid -> uuid.equals(uuidString));
+                    if(PLAYERS_TURNED_OFF.contains(uuidString)) {
+                        PLAYERS_TURNED_OFF.removeIf(uuid -> uuid.equals(uuidString));
                         player.sendMessage(ChatColor.GREEN + "Enabled!");
 
                     } else player.sendMessage(ChatColor.YELLOW + "The function always enabled!");
                     break;
 
                 case "disable":
-                    if(PLAYERS_TURNED_ON.contains(uuidString)) {
-                        PLAYERS_TURNED_ON.add(uuidString);
+                    if(!PLAYERS_TURNED_OFF.contains(uuidString)) {
+                        PLAYERS_TURNED_OFF.add(uuidString);
                         player.sendMessage(ChatColor.RED + "Disabled!");
 
                     } else player.sendMessage(ChatColor.YELLOW + "The function always disabled!");

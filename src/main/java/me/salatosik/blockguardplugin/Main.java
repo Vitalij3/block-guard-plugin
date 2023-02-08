@@ -6,6 +6,7 @@ import me.salatosik.blockguardplugin.listeners.PlayerBlockInteractionListener;
 import me.salatosik.blockguardplugin.listeners.PlayerGuardAdditionListener;
 import me.salatosik.blockguardplugin.listeners.PlayerGuardRemoverListener;
 import me.salatosik.blockguardplugin.listeners.PlayerMagicStickListener;
+import me.salatosik.blockguardplugin.util.DatabaseCleaner;
 import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +17,9 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
     private GeneralDatabase database;
+    private DatabaseCleaner databaseCleaner;
+
+    // TODO реалізувати авто-очищення блоків
 
     @Override
     public void onEnable() {
@@ -38,6 +42,9 @@ public class Main extends JavaPlugin {
         }
 
         getLogger().info("Database loaded! Path: \"" + databaseFile.getAbsolutePath() + "\", do not forget that the name of the database can be changed in \"config.yml\"");
+
+        databaseCleaner = new DatabaseCleaner(database, getServer().getWorlds());
+//        databaseCleaner.runTaskTimer(this, 150, 150);
 
         DisableAddingBlocksCommand disableAddingBlocksCommand = new DisableAddingBlocksCommand();
         PlayerBlockInteractionListener playerBlockInteractionListener = new PlayerBlockInteractionListener(database, this, disableAddingBlocksCommand);

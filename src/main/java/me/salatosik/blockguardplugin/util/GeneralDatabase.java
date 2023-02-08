@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class GeneralDatabase {
@@ -17,7 +16,7 @@ public class GeneralDatabase {
             connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
 
             try(Statement statement = connection.createStatement()) {
-                statement.execute("CREATE TABLE IF NOT EXISTS blocks (x INT, y INT, z INT, uuid STRING)");
+                statement.execute("CREATE TABLE IF NOT EXISTS blocks (x INT, y INT, z INT, uuid STRING, worldName STRING, blockName STRING)");
             }
 
         } catch(IOException | SQLException | ClassNotFoundException exception) { exception.printStackTrace(); connection = null; }
@@ -31,11 +30,19 @@ public class GeneralDatabase {
         return connection != null;
     }
 
+    /*
+    [15:02:13 INFO]: Saving chunks for level 'world'/overworld
+    [15:02:13 INFO]: Saving chunks for level 'world_nether'/the_nether
+    [15:02:13 INFO]: Saving chunks for level 'world_the_end'/the_end
+     */
+
     private void putBlockValues(PlayerBlock playerBlock, PreparedStatement statement, boolean execute) throws SQLException {
         statement.setInt(1, playerBlock.x);
         statement.setInt(2, playerBlock.y);
         statement.setInt(3, playerBlock.z);
         statement.setString(4, playerBlock.uuid);
+        statement.setString(5, playerBlock.worldName);
+        statement.setString(6, playerBlock.blockName);
 
         if(execute) statement.execute();
     }
@@ -46,7 +53,7 @@ public class GeneralDatabase {
         try(Statement statement = connection.createStatement()) {
             try(ResultSet resultSet = statement.executeQuery("SELECT * FROM blocks")) {
                 while(resultSet.next()) {
-                    PlayerBlock playerBlock = new PlayerBlock(resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"), resultSet.getString("uuid"));
+                    PlayerBlock playerBlock = new PlayerBlock(resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z"), resultSet.getString("uuid"), resultSet.getString("worldName"), resultSet.getString("blockName"));
                     playerBlocks.add(playerBlock);
                 }
             }
@@ -57,13 +64,13 @@ public class GeneralDatabase {
     }
 
     public void addPlayerBlock(PlayerBlock playerBlock) {
-        try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO blocks (x, y, z, uuid) VALUES(?, ?, ?, ?)")) {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO blocks (x, y, z, uuid, worldName, blockName) VALUES(?, ?, ?, ?, ?, ?)")) {
             putBlockValues(playerBlock, preparedStatement, true);
         } catch(SQLException exception) { exception.printStackTrace(); }
     }
 
     public void removePlayerBlock(PlayerBlock playerBlock) {
-        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM blocks WHERE x = ? AND y = ? AND z = ? AND uuid = ?")) {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM blocks WHERE x = ? AND y = ? AND z = ? AND uuid = ? AND worldName = ? AND blockName = ?")) {
             putBlockValues(playerBlock, preparedStatement, true);
         } catch(SQLException exception) { exception.printStackTrace(); }
     }

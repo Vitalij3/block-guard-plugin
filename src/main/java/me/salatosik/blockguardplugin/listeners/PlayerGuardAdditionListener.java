@@ -31,7 +31,7 @@ public class PlayerGuardAdditionListener implements Listener {
             }
 
             Block block = event.getClickedBlock();
-            PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), event.getPlayer().getUniqueId().toString());
+            PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), event.getPlayer().getUniqueId().toString(), player.getWorld().getName(), block.getType().toString());
 
             if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) {
                 player.sendMessage(ChatColor.YELLOW + "This block already belongs to someone.");

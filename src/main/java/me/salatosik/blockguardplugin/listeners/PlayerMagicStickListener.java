@@ -25,7 +25,7 @@ public class PlayerMagicStickListener implements Listener {
         this.database = database;
     }
 
-    @EventHandler
+    @EventHandler()
     public void onMagicStickUsed(PlayerInteractEvent event) {
         if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) & event.hasItem() && MagicItem.BLOCK_PICKER.equals(event.getItem())) {
             event.setCancelled(true);
@@ -39,7 +39,7 @@ public class PlayerMagicStickListener implements Listener {
             Block block = event.getClickedBlock();
 
             for(PlayerBlock playerBlock: database.getPlayerBlocks()) {
-                if(playerBlock.equals(new PlayerBlock(block.getX(), block.getY(), block.getZ(), eventPlayer.getUniqueId().toString()))) {
+                if(playerBlock.equalsIgnoreUuid(new PlayerBlock(block.getX(), block.getY(), block.getZ(), null, eventPlayer.getWorld().getName(), block.getType().toString()))) {
                     OfflinePlayer player = plugin.getServer().getOfflinePlayer(UUID.fromString(playerBlock.uuid));
 
                     if(player != null) {

@@ -3,8 +3,11 @@ package me.salatosik.blockguardplugin.listeners;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
 import me.salatosik.blockguardplugin.util.GeneralDatabase;
+import me.salatosik.blockguardplugin.util.MagicItem;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +24,7 @@ import java.util.List;
 
 public class PlayerBlockInteractionListener implements Listener {
     public PlayerBlockInteractionListener(GeneralDatabase database, JavaPlugin plugin, DisableAddingBlocksCommand disableAddingBlocksCommand) {
-        this.PLAYERS_TURNED_OFF = disableAddingBlocksCommand.PLAYERS_TURNED_ON;
+        this.PLAYERS_TURNED_OFF = disableAddingBlocksCommand.PLAYERS_TURNED_OFF;
         this.plugin = plugin;
         this.database = database;
     }
@@ -38,6 +41,7 @@ public class PlayerBlockInteractionListener implements Listener {
     @EventHandler
     public void onPlayerPlacedBlockIn(PlayerInteractEvent event) {
         if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !Vars.verifyWorld(event.getClickedBlock().getWorld())) return;
+        if(event.hasItem() && MagicItem.verifyMagicItem(event.getItem())) return;
 
         if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !event.getClickedBlock().isEmpty()) {
             Block block = event.getClickedBlock();
@@ -46,7 +50,7 @@ public class PlayerBlockInteractionListener implements Listener {
             for(PlayerBlock playerBlock: database.getPlayerBlocks()) {
                 if(playerBlock.x == block.getX() & playerBlock.y == block.getY() & playerBlock.z == block.getZ() && !playerBlock.uuid.equals(player.getUniqueId().toString())) {
                     event.setCancelled(true);
-                    player.sendMessage(ChatColor.YELLOW + "You can't put a block here.");
+                    player.sendMessage(ChatColor.YELLOW + "You cannot place a block here");
                     return;
                 }
             }
@@ -60,8 +64,8 @@ public class PlayerBlockInteractionListener implements Listener {
         if(!Vars.verifyWorld((event.getBlock().getWorld()))) return;
         if(event.getBlock().getType().equals(Material.FIRE)) return;
 
-        if(PLAYERS_TURNED_OFF.contains(event.getPlayer().getUniqueId().toString())) {
-            PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString());
+        if(!PLAYERS_TURNED_OFF.contains(event.getPlayer().getUniqueId().toString())) {
+            PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString(), event.getBlock().getWorld().getName(), event.getBlock().getType().toString());
             if(!PlayerBlock.search(playerBlock, database.getPlayerBlocks())) database.addPlayerBlock(playerBlock);
         }
     }
@@ -70,7 +74,7 @@ public class PlayerBlockInteractionListener implements Listener {
     public void onPlayerBreaksEvent(BlockBreakEvent event) {
         if(!Vars.verifyWorld((event.getBlock().getWorld()))) return;
 
-        PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString());
+        PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString(), event.getBlock().getWorld().getName(), event.getBlock().getType().toString());
 
         if(checkForRight(playerBlock)) {
             event.setCancelled(true);
@@ -86,10 +90,12 @@ public class PlayerBlockInteractionListener implements Listener {
         }
     }
 
-    private boolean protectBlock(List<Block> movedBlocks) {
-        for(Block block: movedBlocks) {
-            PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
-            if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) return true;
+    private boolean protectBlock(List<Block> movedBlocks, String worldName) {
+        if(movedBlocks.size() != 0) {
+            for(Block block: movedBlocks) {
+                PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null, worldName, block.getType().toString());
+                if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) return true;
+            }
         }
 
         return false;
@@ -98,20 +104,20 @@ public class PlayerBlockInteractionListener implements Listener {
     @EventHandler
     public void onBlockPistonExtend(BlockPistonExtendEvent event) {
         if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
-        if(protectBlock(event.getBlocks())) event.setCancelled(true);
+        if(protectBlock(event.getBlocks(), event.getBlock().getWorld().getName())) event.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockPistonRetract(BlockPistonRetractEvent event) {
         if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
-        if(protectBlock(event.getBlocks())) event.setCancelled(true);
+        if(protectBlock(event.getBlocks(), event.getBlock().getWorld().getName())) event.setCancelled(true);
     }
 
     @EventHandler
     public void onPhysicBlock(EntityChangeBlockEvent event) {
         if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
         Block block = event.getBlock();
-        PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
+        PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null, event.getBlock().getWorld().getName(), block.getType().toString());
 
         if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) {
             database.removePlayerBlock(playerBlock);
@@ -122,7 +128,7 @@ public class PlayerBlockInteractionListener implements Listener {
     public void onBlockBurning(BlockBurnEvent event) {
         if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
         Block block = event.getBlock();
-        PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null);
+        PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null, event.getBlock().getWorld().getName(), block.getType().toString());
         if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) event.setCancelled(true);
     }
 
@@ -157,7 +163,7 @@ public class PlayerBlockInteractionListener implements Listener {
 
                 for(Material df: DESTRUCTIVE_FORCES) {
                     if(df.equals(toBlockMaterial)) {
-                        PlayerBlock toPlayerBlock = new PlayerBlock(toBlock.getX(), toBlock.getY(), toBlock.getZ(), null);
+                        PlayerBlock toPlayerBlock = new PlayerBlock(toBlock.getX(), toBlock.getY(), toBlock.getZ(), null, event.getBlock().getWorld().getName(), toBlock.getType().toString());
 
                         for(PlayerBlock playerBlock: database.getPlayerBlocks()) {
                             if(playerBlock.equalsIgnoreUuid(toPlayerBlock)) {
@@ -176,4 +182,14 @@ public class PlayerBlockInteractionListener implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onBlockGrow(BlockGrowEvent event) {
+        World world = event.getBlock().getWorld();
+
+        if(world.getPlayers().size() != 0) {
+            world.getPlayers().forEach(player -> player.sendMessage(ChatColor.RED + event.getBlock().getType().toString() + ChatColor.GREEN + " updated!"));
+        }
+    }
+
 }

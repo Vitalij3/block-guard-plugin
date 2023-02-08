@@ -57,4 +57,14 @@ public enum MagicItem {
     public String getName() {
         return name;
     }
+
+    public static boolean verifyMagicItem(ItemStack item) {
+        for(MagicItem magicItem: MagicItem.values()) {
+            if(magicItem != null && magicItem.equals(item)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

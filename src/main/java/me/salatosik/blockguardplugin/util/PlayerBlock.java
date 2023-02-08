@@ -8,20 +8,26 @@ import java.util.List;
 
 public class PlayerBlock {
     public final int x, y, z;
-    public final String uuid;
+    public final String uuid, worldName, blockName;
 
-    public PlayerBlock(int x, int y, int z, String uuid) {
+    public PlayerBlock(int x, int y, int z, String uuid, String worldName, String blockName) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.uuid = uuid;
+        this.worldName = worldName;
+        this.blockName = blockName;
     }
 
     public boolean equals(PlayerBlock playerBlock) {
-        return playerBlock.uuid.equals(uuid) & playerBlock.x == x & playerBlock.y == y & playerBlock.z == z;
+        return playerBlock.uuid.equals(uuid) & playerBlock.x == x & playerBlock.y == y & playerBlock.z == z & playerBlock.worldName.equals(worldName) & playerBlock.blockName.equals(blockName);
     }
 
     public boolean equalsIgnoreUuid(PlayerBlock playerBlock) {
+        return playerBlock.x == x & playerBlock.y == y & playerBlock.z == z & playerBlock.worldName.equals(worldName) & playerBlock.blockName.equals(blockName);
+    }
+
+    public boolean equalsCoordinates(PlayerBlock playerBlock) {
         return playerBlock.x == x & playerBlock.y == y & playerBlock.z == z;
     }
 
@@ -35,8 +41,8 @@ public class PlayerBlock {
         return false;
     }
 
-    public static <E extends BlockEvent> PlayerBlock getPlayerBlockByBlockEvent(E blockEvent, String uuid) {
+    public static <E extends BlockEvent> PlayerBlock getPlayerBlockByBlockEvent(E blockEvent, String uuid, String worldName, String blockName) {
         Block b = blockEvent.getBlock();
-        return new PlayerBlock(b.getX(), b.getY(), b.getZ(), uuid);
+        return new PlayerBlock(b.getX(), b.getY(), b.getZ(), uuid, worldName, blockName);
     }
 }

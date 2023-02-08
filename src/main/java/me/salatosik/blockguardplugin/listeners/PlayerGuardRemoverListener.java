@@ -33,7 +33,7 @@ public class PlayerGuardRemoverListener implements Listener {
             }
 
             Block block = event.getClickedBlock();
-            PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), player.getUniqueId().toString());
+            PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), player.getUniqueId().toString(), player.getWorld().getName(), event.getClickedBlock().getType().toString());
             List<PlayerBlock> allPlayerBlocks = database.getPlayerBlocks();
 
             if(PlayerBlock.searchIgnoreUuid(playerBlock, allPlayerBlocks)) {
