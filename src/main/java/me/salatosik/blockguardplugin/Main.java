@@ -17,9 +17,6 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
     private GeneralDatabase database;
-    private DatabaseCleaner databaseCleaner;
-
-    // TODO реалізувати авто-очищення блоків
 
     @Override
     public void onEnable() {
@@ -43,8 +40,8 @@ public class Main extends JavaPlugin {
 
         getLogger().info("Database loaded! Path: \"" + databaseFile.getAbsolutePath() + "\", do not forget that the name of the database can be changed in \"config.yml\"");
 
-        databaseCleaner = new DatabaseCleaner(database, getServer().getWorlds());
-//        databaseCleaner.runTaskTimer(this, 150, 150);
+        DatabaseCleaner databaseCleaner = new DatabaseCleaner(database, getServer().getWorlds());
+        databaseCleaner.runTaskTimer(this, 50, 50);
 
         DisableAddingBlocksCommand disableAddingBlocksCommand = new DisableAddingBlocksCommand();
         PlayerBlockInteractionListener playerBlockInteractionListener = new PlayerBlockInteractionListener(database, this, disableAddingBlocksCommand);
@@ -67,6 +64,6 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         database.closeConnection();
-        getLogger().info("The database closed!\nBye-bye ^_^");
+        getLogger().info("The database closed! Bye-bye ^_^");
     }
 }

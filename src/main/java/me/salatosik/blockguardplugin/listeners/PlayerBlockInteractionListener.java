@@ -5,9 +5,7 @@ import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
 import me.salatosik.blockguardplugin.util.GeneralDatabase;
 import me.salatosik.blockguardplugin.util.MagicItem;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -182,14 +180,4 @@ public class PlayerBlockInteractionListener implements Listener {
             }
         }
     }
-
-    @EventHandler
-    public void onBlockGrow(BlockGrowEvent event) {
-        World world = event.getBlock().getWorld();
-
-        if(world.getPlayers().size() != 0) {
-            world.getPlayers().forEach(player -> player.sendMessage(ChatColor.RED + event.getBlock().getType().toString() + ChatColor.GREEN + " updated!"));
-        }
-    }
-
 }
