@@ -1,4 +1,4 @@
-package me.salatosik.blockguardplugin.util;
+package me.salatosik.blockguardplugin.enums;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

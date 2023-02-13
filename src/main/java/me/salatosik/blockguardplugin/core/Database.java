@@ -1,4 +1,4 @@
-package me.salatosik.blockguardplugin.util;
+package me.salatosik.blockguardplugin.core;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,10 +6,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeneralDatabase {
+public class Database {
     private Connection connection;
 
-    public GeneralDatabase(File file) {
+    public Database(File file) {
         try {
             Class.forName("org.sqlite.JDBC");
             if(!file.exists()) if(!file.createNewFile()) throw new IOException("Failed create database file");
@@ -17,6 +17,7 @@ public class GeneralDatabase {
 
             try(Statement statement = connection.createStatement()) {
                 statement.execute("CREATE TABLE IF NOT EXISTS blocks (x INT, y INT, z INT, uuid STRING, worldName STRING, blockName STRING)");
+                statement.execute("CREATE TABLE IF NOT EXISTS players (uuid STRING PRIMARY KEY, lastPlayed INT)");
             }
 
         } catch(IOException | SQLException | ClassNotFoundException exception) { exception.printStackTrace(); connection = null; }
@@ -30,21 +31,14 @@ public class GeneralDatabase {
         return connection != null;
     }
 
-    /*
-    [15:02:13 INFO]: Saving chunks for level 'world'/overworld
-    [15:02:13 INFO]: Saving chunks for level 'world_nether'/the_nether
-    [15:02:13 INFO]: Saving chunks for level 'world_the_end'/the_end
-     */
-
-    private void putBlockValues(PlayerBlock playerBlock, PreparedStatement statement, boolean execute) throws SQLException {
+    private void putBlockValues(PlayerBlock playerBlock, PreparedStatement statement) throws SQLException {
         statement.setInt(1, playerBlock.x);
         statement.setInt(2, playerBlock.y);
         statement.setInt(3, playerBlock.z);
         statement.setString(4, playerBlock.uuid);
         statement.setString(5, playerBlock.worldName);
         statement.setString(6, playerBlock.blockName);
-
-        if(execute) statement.execute();
+        statement.execute();
     }
 
     public List<PlayerBlock> getPlayerBlocks() {
@@ -65,13 +59,13 @@ public class GeneralDatabase {
 
     public void addPlayerBlock(PlayerBlock playerBlock) {
         try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO blocks (x, y, z, uuid, worldName, blockName) VALUES(?, ?, ?, ?, ?, ?)")) {
-            putBlockValues(playerBlock, preparedStatement, true);
+            putBlockValues(playerBlock, preparedStatement);
         } catch(SQLException exception) { exception.printStackTrace(); }
     }
 
     public void removePlayerBlock(PlayerBlock playerBlock) {
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM blocks WHERE x = ? AND y = ? AND z = ? AND uuid = ? AND worldName = ? AND blockName = ?")) {
-            putBlockValues(playerBlock, preparedStatement, true);
+            putBlockValues(playerBlock, preparedStatement);
         } catch(SQLException exception) { exception.printStackTrace(); }
     }
 }

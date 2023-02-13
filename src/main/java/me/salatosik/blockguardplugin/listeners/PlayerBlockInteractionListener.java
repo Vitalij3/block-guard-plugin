@@ -1,9 +1,8 @@
 package me.salatosik.blockguardplugin.listeners;
 
 import me.salatosik.blockguardplugin.Vars;
-import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
-import me.salatosik.blockguardplugin.util.GeneralDatabase;
-import me.salatosik.blockguardplugin.util.MagicItem;
+import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.enums.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,22 +11,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import me.salatosik.blockguardplugin.util.PlayerBlock;
+import me.salatosik.blockguardplugin.core.PlayerBlock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerBlockInteractionListener implements Listener {
-    public PlayerBlockInteractionListener(GeneralDatabase database, JavaPlugin plugin, DisableAddingBlocksCommand disableAddingBlocksCommand) {
-        this.PLAYERS_TURNED_OFF = disableAddingBlocksCommand.PLAYERS_TURNED_OFF;
-        this.plugin = plugin;
+    public PlayerBlockInteractionListener(Database database) {
         this.database = database;
     }
 
-    private final GeneralDatabase database;
+    private final Database database;
 
     private boolean checkForRight(PlayerBlock playerBlock) {
         List<PlayerBlock> playerBlocks = database.getPlayerBlocks();
@@ -55,19 +51,6 @@ public class PlayerBlockInteractionListener implements Listener {
         }
     }
 
-    private final List<String> PLAYERS_TURNED_OFF;
-
-    @EventHandler
-    public void onPlayerPlaceBlock(BlockPlaceEvent event) {
-        if(!Vars.verifyWorld((event.getBlock().getWorld()))) return;
-        if(event.getBlock().getType().equals(Material.FIRE)) return;
-
-        if(!PLAYERS_TURNED_OFF.contains(event.getPlayer().getUniqueId().toString())) {
-            PlayerBlock playerBlock = PlayerBlock.getPlayerBlockByBlockEvent(event, event.getPlayer().getUniqueId().toString(), event.getBlock().getWorld().getName(), event.getBlock().getType().toString());
-            if(!PlayerBlock.search(playerBlock, database.getPlayerBlocks())) database.addPlayerBlock(playerBlock);
-        }
-    }
-
     @EventHandler
     public void onPlayerBreaksEvent(BlockBreakEvent event) {
         if(!Vars.verifyWorld((event.getBlock().getWorld()))) return;
@@ -79,13 +62,6 @@ public class PlayerBlockInteractionListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You can't hack this block.");
 
         } else database.removePlayerBlock(playerBlock);
-    }
-
-    @EventHandler
-    public void onPlayerWorldTeleported(PlayerChangedWorldEvent event) {
-        if(Vars.verifyWorld((event.getFrom()))) {
-            event.getPlayer().sendMessage(ChatColor.RED + "In this world, you cannot protect your blocks. Be careful.");
-        }
     }
 
     private boolean protectBlock(List<Block> movedBlocks, String worldName) {
@@ -118,7 +94,7 @@ public class PlayerBlockInteractionListener implements Listener {
         PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null, event.getBlock().getWorld().getName(), block.getType().toString());
 
         if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) {
-            database.removePlayerBlock(playerBlock);
+            event.setCancelled(true);
         }
     }
 
@@ -129,8 +105,6 @@ public class PlayerBlockInteractionListener implements Listener {
         PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), null, event.getBlock().getWorld().getName(), block.getType().toString());
         if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) event.setCancelled(true);
     }
-
-    private final Plugin plugin;
 
     private static final Material[] DESTRUCTIVE_FORCES = {
             Material.STONE_BUTTON,
@@ -152,6 +126,7 @@ public class PlayerBlockInteractionListener implements Listener {
 
     @EventHandler
     public void onBlockFromTo(BlockFromToEvent event) {
+        if(!Vars.verifyWorld(event.getBlock().getWorld())) return;
         Material blockType = event.getBlock().getType();
 
         for(Material d: DESTRUCTIVE) {
@@ -179,5 +154,29 @@ public class PlayerBlockInteractionListener implements Listener {
                 break;
             }
         }
+    }
+
+    private void cancelBlockExplode(List<Block> blockList) {
+        List<PlayerBlock> playerBlocks = database.getPlayerBlocks();
+        List<Block> blocks = new ArrayList<>(blockList);
+
+        for(PlayerBlock pb: playerBlocks) {
+            for(Block block: blocks) {
+                if(pb.x == block.getX() & pb.y == block.getY() & pb.z == block.getZ() & pb.worldName.equals(block.getWorld().getName())) {
+                    blockList.remove(block);
+                    break;
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent event) {
+        if(Vars.verifyWorld(event.getBlock().getWorld())) cancelBlockExplode(event.blockList());
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if(Vars.verifyWorld(event.getLocation().getBlock().getWorld())) cancelBlockExplode(event.blockList());
     }
 }

@@ -1,6 +1,6 @@
 package me.salatosik.blockguardplugin.commands;
 
-import me.salatosik.blockguardplugin.util.MagicItem;
+import me.salatosik.blockguardplugin.enums.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,11 +16,11 @@ public class MagicItemCommands implements CommandExecutor {
 
         if(playerItems.length != 0) {
             for(ItemStack playerItem: playerItems) {
-                if(playerItem == null) break;
+                if(playerItem == null) continue;
 
                 ItemMeta itemPlayerMeta = playerItem.getItemMeta();
 
-                if(playerItem.getType().equals(item.getMaterial()) && itemPlayerMeta.getLore().size() != 0 && itemPlayerMeta.getLore().get(0).equals(item.getLore())) {
+                if(playerItem.getType().equals(item.getMaterial()) && itemPlayerMeta.getLore().size() != 0 && itemPlayerMeta.getLore().get(0).equals(item.getLore()) & playerItem.getAmount() > 0) {
                     player.sendMessage(ChatColor.RED + "This item is already in your inventory!");
                     return;
                 }
@@ -33,19 +33,19 @@ public class MagicItemCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(commandSender instanceof Player) {
+        if(commandSender instanceof Player & strings.length != 0) {
             Player player = (Player) commandSender;
 
-            switch(command.getName()) {
-                case "give-block-picker":
+            switch(strings[0]) {
+                case "picker":
                     give(player, MagicItem.BLOCK_PICKER);
                     break;
 
-                case "give-guard-remover":
+                case "remover":
                     give(player, MagicItem.GUARD_REMOVER);
                     break;
 
-                case "give-guard-addition":
+                case "addition":
                     give(player, MagicItem.GUARD_ADDITION);
                     break;
             }

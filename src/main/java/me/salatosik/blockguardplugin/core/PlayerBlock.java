@@ -1,10 +1,9 @@
-package me.salatosik.blockguardplugin.util;
+package me.salatosik.blockguardplugin.core;
 
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockEvent;
 
 import java.util.Collection;
-import java.util.List;
 
 public class PlayerBlock {
     public final int x, y, z;

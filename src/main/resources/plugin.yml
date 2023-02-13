@@ -3,29 +3,23 @@ description: makes it possible to protect players blocks in case of an attempt t
 version: 1.0
 author: Salatosik
 api-version: 1.12
+database: true
+prefix: block-guard-plugin-by-Salatosik
 main: me.salatosik.blockguardplugin.Main
 
 commands:
-  give-block-picker:
-    description: Gives the magic stick
-    usage: /command
+  give-guard:
+    description: Gives the magic items for controls the guard.
+    usage: /give-block <addition|picker|remover>
     aliases:
-      - gbp
+      - gb
 
-  disable-block-adding:
-    description: Disables the automatic addition of delivered blocks to the database
-    usage: /command <disable|enable>
-    aliases:
-      - dbd
+  remove-block-guard:
+    description: Removes block protection by specified coordinates
+    usage: /remove-block-guard <x> <y> <z>
 
-  give-guard-remover:
-    description: Removes block protection
-    usage: /command
+  my-blocks:
+    description: Gives a list of all the player's blocks, with the possibility of deletion.
+    usage: /my-blocks
     aliases:
-      - ggr
-
-  give-guard-addition:
-    description: Gives an item that when clicked on a block gives protection
-    usage: /command
-    aliases:
-      - gga
+      - mb

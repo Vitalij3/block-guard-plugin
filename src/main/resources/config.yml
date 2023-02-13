@@ -1,0 +1,8 @@
+database-name-file: "database.db"
+
+allows-in-worlds:
+  world: true
+  nether: false
+  ender: false
+
+maximum-protected-block: 10

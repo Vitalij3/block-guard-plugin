@@ -1,14 +1,16 @@
 package me.salatosik.blockguardplugin;
 
-import me.salatosik.blockguardplugin.commands.DisableAddingBlocksCommand;
 import me.salatosik.blockguardplugin.commands.MagicItemCommands;
+import me.salatosik.blockguardplugin.commands.MyBlocksCommand;
+import me.salatosik.blockguardplugin.commands.RemoveBlockGuardCommand;
+import me.salatosik.blockguardplugin.commands.tab.RemoveBlockGuardCompleter;
+import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.listeners.PlayerBlockInteractionListener;
-import me.salatosik.blockguardplugin.listeners.PlayerGuardAdditionListener;
-import me.salatosik.blockguardplugin.listeners.PlayerGuardRemoverListener;
-import me.salatosik.blockguardplugin.listeners.PlayerMagicStickListener;
-import me.salatosik.blockguardplugin.util.DatabaseCleaner;
-import me.salatosik.blockguardplugin.util.GeneralDatabase;
-import org.bukkit.configuration.file.FileConfiguration;
+import me.salatosik.blockguardplugin.listeners.item.PlayerGuardAdditionListener;
+import me.salatosik.blockguardplugin.listeners.item.PlayerGuardRemoverListener;
+import me.salatosik.blockguardplugin.listeners.item.PlayerMagicStickListener;
+import me.salatosik.blockguardplugin.core.DatabaseCleaner;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -16,22 +18,21 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
-    private GeneralDatabase database;
+    private Database database;
 
     @Override
     public void onEnable() {
-        FileConfiguration config = getConfig();
-        if(config.get("databaseFileName") == null) config.set("databaseFileName", "salatosik-plugin-database.db");
-        if(config.get("allowsInWorlds.world") == null) config.set("allowsInWorlds.world", true);
-        if(config.get("allowsInWorlds.nether") == null) config.set("allowsInWorlds.nether", false);
-        if(config.get("allowsInWorlds.ender") == null) config.set("allowsInWorlds.ender", false);
-        if(config.get("defaultValues.disableAutoAddBlockCommand") == null) config.set("defaultValues.disableAutoAddBlockCommand", true);
-        saveConfig();
+        saveDefaultConfig();
+        Vars.init(getConfig());
 
-        Vars.init(config);
+        if(Vars.getMaximumProtectedBlocks() <= 0) {
+            getPluginLoader().disablePlugin(this);
+            getLogger().warning("The plugin will not work properly because the number in the parameter \"maximum-protected-block\" is less than or equal to zero.");
+            return;
+        }
 
-        File databaseFile = new File(getDataFolder(), (String) getConfig().get("databaseFileName"));
-        database = new GeneralDatabase(databaseFile);
+        File databaseFile = new File(getDataFolder(), (String) getConfig().get("database-name-file"));
+        database = new Database(databaseFile);
         if(!database.verifyConnection()) {
             getLogger().log(Level.OFF, "The database could not be loaded. The plugin will be disabled.");
             this.getPluginLoader().disablePlugin(this);
@@ -40,11 +41,9 @@ public class Main extends JavaPlugin {
 
         getLogger().info("Database loaded! Path: \"" + databaseFile.getAbsolutePath() + "\", do not forget that the name of the database can be changed in \"config.yml\"");
 
-        DatabaseCleaner databaseCleaner = new DatabaseCleaner(database, getServer().getWorlds());
-        databaseCleaner.runTaskTimer(this, 50, 50);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new DatabaseCleaner(database, getServer().getWorlds()), 0, 80);
 
-        DisableAddingBlocksCommand disableAddingBlocksCommand = new DisableAddingBlocksCommand();
-        PlayerBlockInteractionListener playerBlockInteractionListener = new PlayerBlockInteractionListener(database, this, disableAddingBlocksCommand);
+        PlayerBlockInteractionListener playerBlockInteractionListener = new PlayerBlockInteractionListener(database);
 
         getServer().getPluginManager().registerEvents(playerBlockInteractionListener, this);
         getServer().getPluginManager().registerEvents(new PlayerMagicStickListener(database, this), this);
@@ -53,17 +52,20 @@ public class Main extends JavaPlugin {
 
         MagicItemCommands magicItemCommands = new MagicItemCommands();
 
-        getServer().getPluginCommand("give-block-picker").setExecutor(magicItemCommands);
-        getServer().getPluginCommand("give-guard-remover").setExecutor(magicItemCommands);
-        getServer().getPluginCommand("give-guard-addition").setExecutor(magicItemCommands);
+        getServer().getPluginCommand("give-guard").setExecutor(magicItemCommands);
+        getServer().getPluginCommand("give-guard").setExecutor(magicItemCommands);
+        getServer().getPluginCommand("give-guard").setExecutor(magicItemCommands);
+        getServer().getPluginCommand("give-guard").setTabCompleter((commandSender, command, s, strings) -> Arrays.asList("addition", "picker", "remover"));
 
-        getServer().getPluginCommand("disable-block-adding").setExecutor(disableAddingBlocksCommand);
-        getServer().getPluginCommand("disable-block-adding").setTabCompleter((commandSender, command, s, strings) -> Arrays.asList("enable", "disable"));
+        getServer().getPluginCommand("remove-block-guard").setExecutor(new RemoveBlockGuardCommand(database));
+        getServer().getPluginCommand("remove-block-guard").setTabCompleter(new RemoveBlockGuardCompleter(database));
+
+        getServer().getPluginCommand("my-blocks").setExecutor(new MyBlocksCommand(database));
     }
 
     @Override
     public void onDisable() {
-        database.closeConnection();
+        if(database != null) database.closeConnection();
         getLogger().info("The database closed! Bye-bye ^_^");
     }
 }

@@ -5,11 +5,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class Vars {
     private static boolean allowInWorld = false, allowInNether = false, allowInEnder = false;
+    private static int maximumProtectedBlocks = 0;
 
     public static void init(FileConfiguration config) {
-        allowInWorld = config.getBoolean("allowsInWorlds.world");
-        allowInNether = config.getBoolean("allowsInWorlds.nether");
-        allowInEnder = config.getBoolean("allowsInWorlds.ender");
+        allowInWorld = config.getBoolean("allows-in-worlds.world");
+        allowInNether = config.getBoolean("allows-in-worlds.nether");
+        allowInEnder = config.getBoolean("allows-in-worlds.ender");
+        maximumProtectedBlocks = config.getInt("maximum-protected-block");
     }
 
     public static boolean verifyWorld(World world) {
@@ -19,5 +21,9 @@ public class Vars {
             case THE_END: return Vars.allowInEnder;
             default: return false;
         }
+    }
+
+    public static int getMaximumProtectedBlocks() {
+        return maximumProtectedBlocks;
     }
 }

@@ -1,9 +1,9 @@
-package me.salatosik.blockguardplugin.listeners;
+package me.salatosik.blockguardplugin.listeners.item;
 
 import me.salatosik.blockguardplugin.Vars;
-import me.salatosik.blockguardplugin.util.GeneralDatabase;
-import me.salatosik.blockguardplugin.util.MagicItem;
-import me.salatosik.blockguardplugin.util.PlayerBlock;
+import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.enums.MagicItem;
+import me.salatosik.blockguardplugin.core.PlayerBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -13,11 +13,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerGuardAdditionListener implements Listener {
 
-    public PlayerGuardAdditionListener(GeneralDatabase database) {
+    public PlayerGuardAdditionListener(Database database) {
         this.database = database;
     }
 
-    private final GeneralDatabase database;
+    private final Database database;
 
     @EventHandler
     public void onItemRightClick(PlayerInteractEvent event) {
@@ -38,8 +38,28 @@ public class PlayerGuardAdditionListener implements Listener {
                 return;
             }
 
+            int totalBlocksWithProtection = 0;
+            for(PlayerBlock pb: database.getPlayerBlocks()) {
+                if(pb.uuid.equals(player.getUniqueId().toString())) {
+                    totalBlocksWithProtection++;
+
+                    if(verifyMaxBlockWithProtection(totalBlocksWithProtection, player)) return;
+                }
+            }
+
+            if(verifyMaxBlockWithProtection(totalBlocksWithProtection, player)) return;
+
             database.addPlayerBlock(playerBlock);
             player.sendMessage(ChatColor.GREEN + "This block is now yours!");
         }
+    }
+
+    private boolean verifyMaxBlockWithProtection(int total, Player player) {
+        if(total >= Vars.getMaximumProtectedBlocks()) {
+            player.sendMessage(ChatColor.RED + "You have exceeded the limit!" + ChatColor.GREEN + " Maximum number of blocks with protection: " + Vars.getMaximumProtectedBlocks());
+            return true;
+        }
+
+        return false;
     }
 }

@@ -1,8 +1,8 @@
-package me.salatosik.blockguardplugin.listeners;
+package me.salatosik.blockguardplugin.listeners.item;
 
 import me.salatosik.blockguardplugin.Vars;
-import me.salatosik.blockguardplugin.util.GeneralDatabase;
-import me.salatosik.blockguardplugin.util.MagicItem;
+import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.enums.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -12,15 +12,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import me.salatosik.blockguardplugin.util.PlayerBlock;
+import me.salatosik.blockguardplugin.core.PlayerBlock;
 
 import java.util.UUID;
 
 public class PlayerMagicStickListener implements Listener {
     private final JavaPlugin plugin;
-    private final GeneralDatabase database;
+    private final Database database;
 
-    public PlayerMagicStickListener(GeneralDatabase database, JavaPlugin plugin) {
+    public PlayerMagicStickListener(Database database, JavaPlugin plugin) {
         this.plugin = plugin;
         this.database = database;
     }

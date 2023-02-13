@@ -1,9 +1,9 @@
-package me.salatosik.blockguardplugin.listeners;
+package me.salatosik.blockguardplugin.listeners.item;
 
 import me.salatosik.blockguardplugin.Vars;
-import me.salatosik.blockguardplugin.util.GeneralDatabase;
-import me.salatosik.blockguardplugin.util.MagicItem;
-import me.salatosik.blockguardplugin.util.PlayerBlock;
+import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.enums.MagicItem;
+import me.salatosik.blockguardplugin.core.PlayerBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -15,11 +15,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.List;
 
 public class PlayerGuardRemoverListener implements Listener {
-    public PlayerGuardRemoverListener(GeneralDatabase database) {
+    public PlayerGuardRemoverListener(Database database) {
         this.database = database;
     }
 
-    private final GeneralDatabase database;
+    private final Database database;
 
     @EventHandler
     public void onGuardRemoverInteraction(PlayerInteractEvent event) {
