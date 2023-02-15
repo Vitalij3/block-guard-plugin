@@ -3,7 +3,9 @@ package me.salatosik.blockguardplugin.core;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockEvent;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class PlayerBlock {
     public final int x, y, z;
@@ -43,5 +45,17 @@ public class PlayerBlock {
     public static <E extends BlockEvent> PlayerBlock getPlayerBlockByBlockEvent(E blockEvent, String uuid, String worldName, String blockName) {
         Block b = blockEvent.getBlock();
         return new PlayerBlock(b.getX(), b.getY(), b.getZ(), uuid, worldName, blockName);
+    }
+
+    public static <L extends PlayerBlock> List<PlayerBlock> selectBlockByUuid(String uuid, List<L> playerBlocks) {
+        List<PlayerBlock> newList = new ArrayList<>();
+
+        for(PlayerBlock pb: playerBlocks) {
+            if(pb.uuid.equals(uuid)) {
+                newList.add(pb);
+            }
+        }
+
+        return newList;
     }
 }

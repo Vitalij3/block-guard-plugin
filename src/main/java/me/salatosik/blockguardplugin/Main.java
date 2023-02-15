@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin;
 
+import fr.minuskube.inv.InventoryManager;
 import me.salatosik.blockguardplugin.commands.MagicItemCommands;
 import me.salatosik.blockguardplugin.commands.MyBlocksCommand;
 import me.salatosik.blockguardplugin.commands.RemoveBlockGuardCommand;
@@ -39,6 +40,9 @@ public class Main extends JavaPlugin {
             return;
         }
 
+        inventoryManager = new InventoryManager(this);
+        inventoryManager.init();
+
         getLogger().info("Database loaded! Path: \"" + databaseFile.getAbsolutePath() + "\", do not forget that the name of the database can be changed in \"config.yml\"");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new DatabaseCleaner(database, getServer().getWorlds()), 0, 80);
@@ -67,5 +71,11 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         if(database != null) database.closeConnection();
         getLogger().info("The database closed! Bye-bye ^_^");
+    }
+
+    private static InventoryManager inventoryManager;
+
+    public static InventoryManager getInventoryManager() {
+        return inventoryManager;
     }
 }

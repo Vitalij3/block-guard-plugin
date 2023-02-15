@@ -6,7 +6,7 @@
 
     <groupId>me.salatosik.blockguardplugin</groupId>
     <artifactId>block-guard-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -34,6 +34,12 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.39.3.0</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.minuskube.inv</groupId>
+            <artifactId>smart-invs</artifactId>
+            <version>1.2.7</version>
         </dependency>
     </dependencies>
 

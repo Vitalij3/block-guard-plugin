@@ -10,7 +10,7 @@ The latest version of the plugin so far adds 3 commands, the use of which you ca
 ### Description of commands
 - `/give-guard <addition|picker|remover>` - gives convenient items for controlling blocks. Deleting, adding, informing.
 - `/remove-block-guard <x> <y> <z>` - removes block protection at a distance if you know the coordinates.
-- `/my-blocks` - generates a convenient list of all blocks, by clicking on one of them you can quickly delete. For the operation of such mechanics, the _**previous command is used.**_
+- `/my-blocks` - generates a window in which you can scroll through the list of your protected blocks. To delete a block in the menu, you need to click on the block, all the necessary information of the block is in the description so you cannot confuse with anything.
 
 # Config.yml
 When you first start the server with the plugin, a configuration file will appear that can be configured, the purpose of all parameters will be described from the bottom.
