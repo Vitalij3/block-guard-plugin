@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.commands.tab;
 
+import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.core.PlayerBlock;
 import org.bukkit.command.Command;
@@ -13,8 +14,8 @@ import java.util.List;
 public class RemoveBlockGuardCompleter implements TabCompleter {
     private final Database database;
 
-    public RemoveBlockGuardCompleter(Database database) {
-        this.database = database;
+    public RemoveBlockGuardCompleter() {
+        this.database = Main.getDatabase();
     }
 
     private List<String> getCoordinates(Player player, int index) {

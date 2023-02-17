@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.listeners.item;
 
+import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.enums.MagicItem;
@@ -20,9 +21,9 @@ public class PlayerMagicStickListener implements Listener {
     private final JavaPlugin plugin;
     private final Database database;
 
-    public PlayerMagicStickListener(Database database, JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.database = database;
+    public PlayerMagicStickListener() {
+        this.plugin = JavaPlugin.getProvidingPlugin(Main.class);
+        this.database = Main.getDatabase();
     }
 
     @EventHandler()
@@ -59,7 +60,7 @@ public class PlayerMagicStickListener implements Listener {
         }
     }
 
-    private String getNetworkStatusString(OfflinePlayer offlinePlayer) {
+    protected static String getNetworkStatusString(OfflinePlayer offlinePlayer) {
         if(offlinePlayer.isOnline()) return ChatColor.GREEN + "ONLINE";
         else return ChatColor.RED + "OFFLINE";
     }

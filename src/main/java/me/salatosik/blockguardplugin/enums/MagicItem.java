@@ -1,12 +1,13 @@
 package me.salatosik.blockguardplugin.enums;
 
+import me.salatosik.blockguardplugin.interfaces.IItemInteraction;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
 
-public enum MagicItem {
+public enum MagicItem implements IItemInteraction {
     BLOCK_PICKER(1, "Magic stick", "magic-stick", Material.STICK),
     GUARD_REMOVER(1, "Guard remover", "guard-remover", Material.BARRIER),
     GUARD_ADDITION(1, "Guard addition", "guard-addition", Material.SLIME_BALL);

@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
-    private Database database;
 
     @Override
     public void onEnable() {
@@ -50,9 +49,9 @@ public class Main extends JavaPlugin {
         PlayerBlockInteractionListener playerBlockInteractionListener = new PlayerBlockInteractionListener(database);
 
         getServer().getPluginManager().registerEvents(playerBlockInteractionListener, this);
-        getServer().getPluginManager().registerEvents(new PlayerMagicStickListener(database, this), this);
-        getServer().getPluginManager().registerEvents(new PlayerGuardRemoverListener(database), this);
-        getServer().getPluginManager().registerEvents(new PlayerGuardAdditionListener(database), this);
+        getServer().getPluginManager().registerEvents(new PlayerMagicStickListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerGuardRemoverListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerGuardAdditionListener(), this);
 
         MagicItemCommands magicItemCommands = new MagicItemCommands();
 
@@ -61,10 +60,10 @@ public class Main extends JavaPlugin {
         getServer().getPluginCommand("give-guard").setExecutor(magicItemCommands);
         getServer().getPluginCommand("give-guard").setTabCompleter((commandSender, command, s, strings) -> Arrays.asList("addition", "picker", "remover"));
 
-        getServer().getPluginCommand("remove-block-guard").setExecutor(new RemoveBlockGuardCommand(database));
-        getServer().getPluginCommand("remove-block-guard").setTabCompleter(new RemoveBlockGuardCompleter(database));
+        getServer().getPluginCommand("remove-block-guard").setExecutor(new RemoveBlockGuardCommand());
+        getServer().getPluginCommand("remove-block-guard").setTabCompleter(new RemoveBlockGuardCompleter());
 
-        getServer().getPluginCommand("my-blocks").setExecutor(new MyBlocksCommand(database));
+        getServer().getPluginCommand("my-blocks").setExecutor(new MyBlocksCommand());
     }
 
     @Override
@@ -74,8 +73,13 @@ public class Main extends JavaPlugin {
     }
 
     private static InventoryManager inventoryManager;
+    private static Database database;
 
     public static InventoryManager getInventoryManager() {
         return inventoryManager;
+    }
+
+    public static Database getDatabase() {
+        return database;
     }
 }

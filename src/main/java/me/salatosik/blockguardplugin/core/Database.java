@@ -17,7 +17,6 @@ public class Database {
 
             try(Statement statement = connection.createStatement()) {
                 statement.execute("CREATE TABLE IF NOT EXISTS blocks (x INT, y INT, z INT, uuid STRING, worldName STRING, blockName STRING)");
-                statement.execute("CREATE TABLE IF NOT EXISTS players (uuid STRING PRIMARY KEY, lastPlayed INT)");
             }
 
         } catch(IOException | SQLException | ClassNotFoundException exception) { exception.printStackTrace(); connection = null; }

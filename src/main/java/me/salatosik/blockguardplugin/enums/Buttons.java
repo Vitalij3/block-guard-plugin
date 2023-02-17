@@ -1,10 +1,11 @@
 package me.salatosik.blockguardplugin.enums;
 
+import me.salatosik.blockguardplugin.interfaces.IItemInteraction;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public enum Buttons {
+public enum Buttons implements IItemInteraction {
     BACK(Material.BARRIER, "Back"), NEXT(Material.SLIME_BLOCK, "Next");
 
     private final Material material;
@@ -23,7 +24,7 @@ public enum Buttons {
         return material;
     }
 
-    public ItemStack getItemStack() {
+    public ItemStack toItemStack() {
         ItemStack itemStack = new ItemStack(material);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(name);

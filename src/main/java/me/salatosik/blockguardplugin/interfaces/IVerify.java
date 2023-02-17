@@ -1,4 +1,4 @@
-package me.salatosik.blockguardplugin.function;
+package me.salatosik.blockguardplugin.interfaces;
 
 public interface IVerify {
     boolean verify();

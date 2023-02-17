@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.commands;
 
+import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.core.PlayerBlock;
 import org.bukkit.ChatColor;
@@ -13,8 +14,8 @@ import java.util.List;
 public class RemoveBlockGuardCommand implements CommandExecutor {
     private final Database database;
 
-    public RemoveBlockGuardCommand(Database database) {
-        this.database = database;
+    public RemoveBlockGuardCommand() {
+        this.database = Main.getDatabase();
     }
 
     @Override

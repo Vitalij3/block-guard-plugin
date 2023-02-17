@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.listeners.item;
 
+import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.enums.MagicItem;
@@ -15,8 +16,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.List;
 
 public class PlayerGuardRemoverListener implements Listener {
-    public PlayerGuardRemoverListener(Database database) {
-        this.database = database;
+    public PlayerGuardRemoverListener() {
+        this.database = Main.getDatabase();
     }
 
     private final Database database;

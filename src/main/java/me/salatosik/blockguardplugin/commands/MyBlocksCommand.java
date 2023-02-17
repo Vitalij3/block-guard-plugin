@@ -3,10 +3,11 @@ package me.salatosik.blockguardplugin.commands;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.*;
+import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.core.PlayerBlock;
 import me.salatosik.blockguardplugin.enums.Buttons;
-import me.salatosik.blockguardplugin.function.IVerify;
+import me.salatosik.blockguardplugin.interfaces.IVerify;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -22,9 +23,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class MyBlocksCommand implements CommandExecutor {
-    public MyBlocksCommand(Database database) {
+    public MyBlocksCommand() {
 
-        this.database = database;
+        this.database = Main.getDatabase();
 
         SmartInventory.Builder builder = SmartInventory.builder();
         builder.id("my-blocks-command-table");
@@ -157,8 +158,8 @@ public class MyBlocksCommand implements CommandExecutor {
 
         private void initPaginationControlButtons(Pagination pagination, Player player, InventoryContents inventoryContents, IVerify iVerify) {
             if(iVerify.verify()) {
-                if(!pagination.isFirst() & removedBlocks != 7) inventoryContents.set(0, 0, ClickableItem.of(Buttons.BACK.getItemStack(), event -> myBlocksInventory.open(player, pagination.previous().getPage())));
-                if(!pagination.isLast()) inventoryContents.set(0, 8, ClickableItem.of(Buttons.NEXT.getItemStack(), event -> myBlocksInventory.open(player, pagination.next().getPage())));
+                if(!pagination.isFirst() & removedBlocks != 7) inventoryContents.set(0, 0, ClickableItem.of(Buttons.BACK.toItemStack(), event -> myBlocksInventory.open(player, pagination.previous().getPage())));
+                if(!pagination.isLast()) inventoryContents.set(0, 8, ClickableItem.of(Buttons.NEXT.toItemStack(), event -> myBlocksInventory.open(player, pagination.next().getPage())));
             }
         }
 

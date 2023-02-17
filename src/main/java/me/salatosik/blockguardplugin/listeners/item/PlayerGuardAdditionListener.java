@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.listeners.item;
 
+import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.enums.MagicItem;
@@ -14,8 +15,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerGuardAdditionListener implements Listener {
 
-    public PlayerGuardAdditionListener(Database database) {
-        this.database = database;
+    public PlayerGuardAdditionListener() {
+        this.database = Main.getDatabase();
     }
 
     private final Database database;
@@ -55,7 +56,7 @@ public class PlayerGuardAdditionListener implements Listener {
         }
     }
 
-    private boolean verifyMaxBlockWithProtection(int total, Player player) {
+    protected static boolean verifyMaxBlockWithProtection(int total, Player player) {
         if(total >= Vars.getMaximumProtectedBlocks()) {
             player.sendMessage(ChatColor.RED + "You have exceeded the limit!" + ChatColor.GREEN + " Maximum number of blocks with protection: " + Vars.getMaximumProtectedBlocks());
             return true;

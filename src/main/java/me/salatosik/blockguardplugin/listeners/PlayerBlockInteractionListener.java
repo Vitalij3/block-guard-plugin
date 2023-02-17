@@ -1,5 +1,6 @@
 package me.salatosik.blockguardplugin.listeners;
 
+import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.core.Database;
 import me.salatosik.blockguardplugin.enums.MagicItem;
@@ -106,7 +107,7 @@ public class PlayerBlockInteractionListener implements Listener {
         if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) event.setCancelled(true);
     }
 
-    private static final Material[] DESTRUCTIVE_FORCES = {
+    protected static final Material[] DESTRUCTIVE_FORCES = {
             Material.STONE_BUTTON,
             Material.WOOD_BUTTON,
             Material.LEVER,
@@ -116,7 +117,7 @@ public class PlayerBlockInteractionListener implements Listener {
             Material.WOOD_PLATE
     };
 
-    private static final Material[] DESTRUCTIVE = {
+    protected static final Material[] DESTRUCTIVE = {
             Material.WATER,
             Material.STATIONARY_WATER,
             Material.LAVA,
@@ -156,8 +157,8 @@ public class PlayerBlockInteractionListener implements Listener {
         }
     }
 
-    private void cancelBlockExplode(List<Block> blockList) {
-        List<PlayerBlock> playerBlocks = database.getPlayerBlocks();
+    private static void cancelBlockExplode(List<Block> blockList) {
+        List<PlayerBlock> playerBlocks = Main.getDatabase().getPlayerBlocks();
         List<Block> blocks = new ArrayList<>(blockList);
 
         for(PlayerBlock pb: playerBlocks) {
