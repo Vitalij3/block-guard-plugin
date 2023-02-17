@@ -1,0 +1,136 @@
+general-lang:
+  cannot-use-item:
+    uk: "Ви не можете використовувати цей предет у цьому світі!"
+    eng: "You cannot use this item in this world!"
+    ru: "Вы не можете использовать этот предмет в этом мире!"
+
+  already-belongs:
+    uk: "Цей блок вже комусь належить"
+    eng: "This block already belongs to someone"
+    ru: "Этот блок уже кому-то пренадлежит"
+
+  does-not-belong:
+    uk: "Цей блок нікому не належить"
+    eng: "This block does not belong to anyone"
+    ru: "Этот блок ещё никому не пренадлежит"
+
+  network-states:
+    online:
+      uk: "Онлайн"
+      eng: "Online"
+      ru: "Онлайн"
+
+    offline:
+      uk: "Оффлайн"
+      eng: "Offline"
+      ru: "Оффлайн"
+
+
+magic-item-command:
+  error:
+    uk: "Цей предмет вже є у вашому інвентарі!"
+    eng: "This item is already in your inventory!"
+    ru: "Этот предмет уже есть в вашем интентаре!"
+
+
+my-block-command:
+  inventory-name:
+    uk: "Ваші блоки"
+    eng: "Your blocks"
+    ru: "Ваши блоки"
+
+  total-blocks:
+    uk: "Усього блоків з захистом"
+    eng: "Total blocks with protection"
+    ru: "Всего блоков из защитой"
+
+  removed:
+    uk: "Видалено"
+    eng: "Removed"
+    ru: "Удалено"
+
+  protection-over:
+    uk: "Блоки з захистом закінчилися"
+    eng: "The blocks with protection are over"
+    ru: "Блоки из защитой закончились"
+
+  no-protection:
+    uk: "Наразі у вас немає блоків із захистом"
+    eng: "You don't currently have blocks with protection"
+    ru: "На данный момент у вас нету блоков из защитой"
+
+
+remove-block-guard-command:
+  incorrect-number:
+    uk: "Будь-ласка введіть цифри"
+    eng: "Please enter the numbers"
+    ru: "Пожалуйста введите цифры"
+
+  removed:
+    uk: "Захист блоку видалено"
+    eng: "The block protection removed"
+    ru: "Защита блока удалена"
+
+  denied:
+    uk: "Ви не є власником вибраного блоку а тому не маєте право на виконану дію"
+    eng: "You are not the owner of this block and therefore do not have the right to do so"
+    ru: "Вы не есть владельцем выбранного блока поэтому вы не имеёте право на исполнение данного действия"
+
+  not-found:
+    uk: "Блоку не знайдено"
+    eng: "The block not found"
+    ru: "Блок не найдено"
+
+
+player-guard-addition-listener:
+  is-now-yours:
+    uk: "Цей блок тепер належить вам!"
+    eng: "This block is now yours"
+    ru: "Этот блок теперь пренадлежит вам"
+
+  exceeded-block-limit:
+    uk: "Ви перевищили ліміт блоків! Максимальна кількість блоків із захистом: [count]"
+    eng: "You have exceeded the block limit! Maximum number of blocks with protection: [count]"
+    ru: "Вы превисили лимит блоков! Максимальное количество блоков из защитой: [count]"
+
+
+player-guard-remover-listener:
+  guard-removed:
+    uk: "Захист видалено!"
+    eng: "Guard removed!"
+    ru: "Защита удалена!"
+
+
+player-magic-stick-listener:
+  player-information-stages:
+    block-player:
+      uk: "Блок гравця"
+      eng: "Block player"
+      ru: "Блок игрока"
+
+    network-status:
+      uk: "Статус гравця"
+      eng: "Network status"
+      ru: "Статус игрока"
+
+    block-coordinates:
+      uk: "Координати блоку"
+      eng: "Block coordinates"
+      ru: "Координаты блока"
+
+  information-not-found:
+    uk: "Інформації не знайдено"
+    eng: "Information not found"
+    ru: "Информации не найдено"
+
+
+player-block-interaction-listener:
+  cannot-place-block:
+    uk: "Ви не можете тут поставити блок!"
+    eng: "You cannot place a block here!"
+    ru: "Вы не можете здесь поставить блок!"
+
+  can`t-hack-block:
+    uk: "Ви не можете зламати цей блок!"
+    eng: "You can't hack this block!"
+    ru: "Вы не можете сламать этот блок!"

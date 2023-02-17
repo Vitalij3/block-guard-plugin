@@ -3,6 +3,7 @@ package me.salatosik.blockguardplugin.listeners.item;
 import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.core.LocalizationManager;
 import me.salatosik.blockguardplugin.enums.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -18,13 +19,10 @@ import me.salatosik.blockguardplugin.core.PlayerBlock;
 import java.util.UUID;
 
 public class PlayerMagicStickListener implements Listener {
-    private final JavaPlugin plugin;
-    private final Database database;
+    private final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(Main.class);
+    private final Database database = Main.getDatabase();
+    private final LocalizationManager LANG = Main.getLocalizationManager();
 
-    public PlayerMagicStickListener() {
-        this.plugin = JavaPlugin.getProvidingPlugin(Main.class);
-        this.database = Main.getDatabase();
-    }
 
     @EventHandler()
     public void onMagicStickUsed(PlayerInteractEvent event) {
@@ -33,7 +31,7 @@ public class PlayerMagicStickListener implements Listener {
             Player eventPlayer = event.getPlayer();
 
             if(!Vars.verifyWorld(event.getClickedBlock().getWorld())) {
-                eventPlayer.sendMessage(ChatColor.RED + "You cannot use this item in this world.");
+                eventPlayer.sendMessage(ChatColor.RED + LANG.getKey("general-lang.cannot-use-item"));
                 return;
             }
 
@@ -44,24 +42,24 @@ public class PlayerMagicStickListener implements Listener {
                     OfflinePlayer player = plugin.getServer().getOfflinePlayer(UUID.fromString(playerBlock.uuid));
 
                     if(player != null) {
-                        String message = "\n" + ChatColor.YELLOW + "Block player: " + ChatColor.GREEN + player.getName() + "\n" +
-                                ChatColor.YELLOW + "Network Status: " + getNetworkStatusString(player) + "\n" +
-                                ChatColor.YELLOW + "Block coordinates: " + ChatColor.GREEN + playerBlock.x + ", " + playerBlock.y + ", " + playerBlock.z + "\n\n";
+                        String message = "\n" + ChatColor.YELLOW + LANG.getKey("player-magic-stick-listener.player-information-stages.block-player") + ": " + ChatColor.GREEN + player.getName() + "\n" +
+                                ChatColor.YELLOW + LANG.getKey("player-magic-stick-listener.player-information-stages.network-status") + ": " + getNetworkStatusString(player) + "\n" +
+                                ChatColor.YELLOW + LANG.getKey("player-magic-stick-listener.player-information-stages.block-coordinates") + ": " + ChatColor.GREEN + playerBlock.x + ", " + playerBlock.y + ", " + playerBlock.z + "\n\n";
 
                         event.getPlayer().sendMessage(message);
 
-                    } else event.getPlayer().sendMessage(ChatColor.RED + "[ERROR]" + ChatColor.YELLOW + "Information not found");
+                    } else event.getPlayer().sendMessage(ChatColor.RED + LANG.getKey("player-magic-stick-listener.information-not-found"));
 
                     return;
                 }
             }
 
-            event.getPlayer().sendMessage(ChatColor.GREEN + "This block does not belong to anyone");
+            event.getPlayer().sendMessage(ChatColor.GREEN + LANG.getKey("general-lang.does-not-belong"));
         }
     }
 
-    protected static String getNetworkStatusString(OfflinePlayer offlinePlayer) {
-        if(offlinePlayer.isOnline()) return ChatColor.GREEN + "ONLINE";
-        else return ChatColor.RED + "OFFLINE";
+    private String getNetworkStatusString(OfflinePlayer offlinePlayer) {
+        if(offlinePlayer.isOnline()) return ChatColor.GREEN + LANG.getKey("general-lang.network-states.online").toUpperCase();
+        else return ChatColor.RED + LANG.getKey("general-lang.network-states.offline").toUpperCase();
     }
 }

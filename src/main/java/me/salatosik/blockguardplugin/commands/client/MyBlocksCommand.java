@@ -1,10 +1,11 @@
-package me.salatosik.blockguardplugin.commands;
+package me.salatosik.blockguardplugin.commands.client;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.*;
 import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.core.LocalizationManager;
 import me.salatosik.blockguardplugin.core.PlayerBlock;
 import me.salatosik.blockguardplugin.enums.Buttons;
 import me.salatosik.blockguardplugin.interfaces.IVerify;
@@ -23,13 +24,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class MyBlocksCommand implements CommandExecutor {
+    private static final LocalizationManager LANG = Main.getLocalizationManager();
+
     public MyBlocksCommand() {
 
         this.database = Main.getDatabase();
 
         SmartInventory.Builder builder = SmartInventory.builder();
         builder.id("my-blocks-command-table");
-        builder.title(ChatColor.GOLD + "Your blocks");
+        builder.title(ChatColor.GOLD + LANG.getKey("my-block-command.inventory-name"));
         builder.type(InventoryType.CHEST);
         builder.size(3, 9);
         builder.closeable(true);
@@ -49,7 +52,7 @@ public class MyBlocksCommand implements CommandExecutor {
             paperItem.setAmount(1);
             ItemMeta paperItemMeta = paperItem.getItemMeta();
             paperItemMeta.setLore(Collections.singletonList("block-count"));
-            paperItemMeta.setDisplayName("Total blocks with protection: " + count);
+            paperItemMeta.setDisplayName(LANG.getKey("my-block-command.total-blocks") + ": " + count);
             paperItem.setItemMeta(paperItemMeta);
 
             return paperItem;
@@ -90,7 +93,7 @@ public class MyBlocksCommand implements CommandExecutor {
                     List<String> currentItemLore = currentItemMeta.getLore();
 
                     if(currentItemLore.size() == 3 && currentItemLore.get(0).equals("player-block")) {
-                        if(currentItemMeta.getDisplayName() != null && currentItemMeta.getDisplayName().equals(ChatColor.RED + "[REMOVED]")) return;
+                        if(currentItemMeta.getDisplayName() != null && currentItemMeta.getDisplayName().equals(ChatColor.RED + "[{text}]".replace("{text}", LANG.getKey("my-block-command.removed").toUpperCase()))) return;
 
                         removedBlocks++;
                         List<PlayerBlock> blocks = database.getPlayerBlocks();
@@ -104,7 +107,7 @@ public class MyBlocksCommand implements CommandExecutor {
                                     ItemStack itemCopied = currentItem.clone();
                                     ItemMeta copiedItemMeta = itemCopied.getItemMeta();
 
-                                    copiedItemMeta.setDisplayName(ChatColor.RED + "[REMOVED]");
+                                    copiedItemMeta.setDisplayName(ChatColor.RED + "[{text}]".replace("{text}", LANG.getKey("my-block-command.removed").toUpperCase()));
                                     itemCopied.setItemMeta(currentItemMeta);
                                     itemCopied.setType(Material.BARRIER);
                                     itemCopied.setItemMeta(copiedItemMeta);
@@ -116,7 +119,7 @@ public class MyBlocksCommand implements CommandExecutor {
 
                                     if(blocksCount == 0) {
                                         inventoryContents.inventory().close(player);
-                                        player.sendMessage(ChatColor.YELLOW + "The blocks with protection are over.");
+                                        player.sendMessage(ChatColor.YELLOW + LANG.getKey("my-block-command.protection-over"));
                                         return;
                                     }
 
@@ -175,7 +178,7 @@ public class MyBlocksCommand implements CommandExecutor {
             Player player = (Player) commandSender;
 
             if(PlayerBlock.selectBlockByUuid(player.getUniqueId().toString(), database.getPlayerBlocks()).size() != 0) myBlocksInventory.open(player);
-            else player.sendMessage(ChatColor.YELLOW + "You don't currently have blocks with protection.");
+            else player.sendMessage(ChatColor.YELLOW + LANG.getKey("my-block-command.no-protection"));
         }
 
         return true;

@@ -3,6 +3,7 @@ package me.salatosik.blockguardplugin.listeners.item;
 import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.core.LocalizationManager;
 import me.salatosik.blockguardplugin.enums.MagicItem;
 import me.salatosik.blockguardplugin.core.PlayerBlock;
 import org.bukkit.ChatColor;
@@ -14,12 +15,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerGuardAdditionListener implements Listener {
-
-    public PlayerGuardAdditionListener() {
-        this.database = Main.getDatabase();
-    }
-
-    private final Database database;
+    private final Database database = Main.getDatabase();
+    private final LocalizationManager LANG = Main.getLocalizationManager();
 
     @EventHandler
     public void onItemRightClick(PlayerInteractEvent event) {
@@ -28,7 +25,7 @@ public class PlayerGuardAdditionListener implements Listener {
             Player player = event.getPlayer();
 
             if(!Vars.verifyWorld(event.getClickedBlock().getWorld())) {
-                player.sendMessage(ChatColor.RED + "You cannot use this item in this world.");
+                player.sendMessage(ChatColor.RED + LANG.getKey("general-lang.cannot-use-item"));
                 return;
             }
 
@@ -36,7 +33,7 @@ public class PlayerGuardAdditionListener implements Listener {
             PlayerBlock playerBlock = new PlayerBlock(block.getX(), block.getY(), block.getZ(), event.getPlayer().getUniqueId().toString(), player.getWorld().getName(), block.getType().toString());
 
             if(PlayerBlock.searchIgnoreUuid(playerBlock, database.getPlayerBlocks())) {
-                player.sendMessage(ChatColor.YELLOW + "This block already belongs to someone.");
+                player.sendMessage(ChatColor.YELLOW + LANG.getKey("player-guard-addition-listener.already-belongs"));
                 return;
             }
 
@@ -52,13 +49,13 @@ public class PlayerGuardAdditionListener implements Listener {
             if(verifyMaxBlockWithProtection(totalBlocksWithProtection, player)) return;
 
             database.addPlayerBlock(playerBlock);
-            player.sendMessage(ChatColor.GREEN + "This block is now yours!");
+            player.sendMessage(ChatColor.GREEN + LANG.getKey("player-guard-addition-listener.is-now-yours"));
         }
     }
 
-    protected static boolean verifyMaxBlockWithProtection(int total, Player player) {
+    private boolean verifyMaxBlockWithProtection(int total, Player player) {
         if(total >= Vars.getMaximumProtectedBlocks()) {
-            player.sendMessage(ChatColor.RED + "You have exceeded the limit!" + ChatColor.GREEN + " Maximum number of blocks with protection: " + Vars.getMaximumProtectedBlocks());
+            player.sendMessage(ChatColor.RED + LANG.getKey("player-guard-addition-listener.exceeded-block-limit").replace("[count]", Integer.toString(Vars.getMaximumProtectedBlocks())));
             return true;
         }
 

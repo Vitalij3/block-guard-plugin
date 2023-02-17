@@ -1,7 +1,8 @@
-package me.salatosik.blockguardplugin.commands;
+package me.salatosik.blockguardplugin.commands.client;
 
 import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.core.LocalizationManager;
 import me.salatosik.blockguardplugin.core.PlayerBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,11 +13,8 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class RemoveBlockGuardCommand implements CommandExecutor {
-    private final Database database;
-
-    public RemoveBlockGuardCommand() {
-        this.database = Main.getDatabase();
-    }
+    private final Database database = Main.getDatabase();
+    private final LocalizationManager LANG = Main.getLocalizationManager();
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -31,7 +29,7 @@ public class RemoveBlockGuardCommand implements CommandExecutor {
                 z = Integer.parseInt(strings[2]);
 
             } catch(NumberFormatException numberFormatException) {
-                player.sendMessage(ChatColor.RED + "Please enter the numbers.");
+                player.sendMessage(ChatColor.RED + LANG.getKey("remove-block-guard-command.incorrect-number"));
                 return true;
             }
 
@@ -39,15 +37,15 @@ public class RemoveBlockGuardCommand implements CommandExecutor {
                 if(pb.x == x & pb.y == y & pb.z == z & pb.worldName.equals(player.getWorld().getName())) {
                     if(pb.uuid.equals(player.getUniqueId().toString())) {
                         database.removePlayerBlock(pb);
-                        player.sendMessage(ChatColor.GREEN + "Block protection removed!");
+                        player.sendMessage(ChatColor.GREEN + LANG.getKey("remove-block-guard-command.removed"));
 
-                    } else player.sendMessage(ChatColor.RED + "You are not the owner of this block and therefore do not have the right to do so.");
+                    } else player.sendMessage(ChatColor.RED + LANG.getKey("remove-block-guard-command.denied"));
 
                     return true;
                 }
             }
 
-            player.sendMessage(ChatColor.YELLOW + "The block not found.");
+            player.sendMessage(ChatColor.YELLOW + LANG.getKey("remove-block-guard-command.not-found"));
         }
 
         return true;

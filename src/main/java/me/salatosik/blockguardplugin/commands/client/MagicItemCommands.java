@@ -1,5 +1,7 @@
-package me.salatosik.blockguardplugin.commands;
+package me.salatosik.blockguardplugin.commands.client;
 
+import me.salatosik.blockguardplugin.Main;
+import me.salatosik.blockguardplugin.core.LocalizationManager;
 import me.salatosik.blockguardplugin.enums.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class MagicItemCommands implements CommandExecutor {
+    private final LocalizationManager LANG = Main.getLocalizationManager();
 
     private void give(Player player, MagicItem item) {
         ItemStack[] playerItems = player.getInventory().getContents();
@@ -21,7 +24,7 @@ public class MagicItemCommands implements CommandExecutor {
                 ItemMeta itemPlayerMeta = playerItem.getItemMeta();
 
                 if(playerItem.getType().equals(item.getMaterial()) && itemPlayerMeta.getLore().size() != 0 && itemPlayerMeta.getLore().get(0).equals(item.getLore()) & playerItem.getAmount() > 0) {
-                    player.sendMessage(ChatColor.RED + "This item is already in your inventory!");
+                    player.sendMessage(ChatColor.RED + LANG.getKey("magic-item-command.error"));
                     return;
                 }
             }

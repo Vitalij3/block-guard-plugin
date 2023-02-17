@@ -1,11 +1,14 @@
 package me.salatosik.blockguardplugin;
 
 import fr.minuskube.inv.InventoryManager;
-import me.salatosik.blockguardplugin.commands.MagicItemCommands;
-import me.salatosik.blockguardplugin.commands.MyBlocksCommand;
-import me.salatosik.blockguardplugin.commands.RemoveBlockGuardCommand;
-import me.salatosik.blockguardplugin.commands.tab.RemoveBlockGuardCompleter;
+import me.salatosik.blockguardplugin.commands.client.MagicItemCommands;
+import me.salatosik.blockguardplugin.commands.client.MyBlocksCommand;
+import me.salatosik.blockguardplugin.commands.client.RemoveBlockGuardCommand;
+import me.salatosik.blockguardplugin.commands.client.tab.RemoveBlockGuardCompleter;
+import me.salatosik.blockguardplugin.commands.server.ChangePluginLangCommand;
+import me.salatosik.blockguardplugin.commands.server.tab.ChangePluginLangCommandTabCompleter;
 import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.core.LocalizationManager;
 import me.salatosik.blockguardplugin.listeners.PlayerBlockInteractionListener;
 import me.salatosik.blockguardplugin.listeners.item.PlayerGuardAdditionListener;
 import me.salatosik.blockguardplugin.listeners.item.PlayerGuardRemoverListener;
@@ -22,7 +25,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
+        this.saveDefaultConfig();
         Vars.init(getConfig());
 
         if(Vars.getMaximumProtectedBlocks() <= 0) {
@@ -39,16 +42,22 @@ public class Main extends JavaPlugin {
             return;
         }
 
-        inventoryManager = new InventoryManager(this);
+        InventoryManager inventoryManager = new InventoryManager(this);
         inventoryManager.init();
+
+        try {
+            localizationManager = new LocalizationManager(this);
+        } catch(Exception exception) {
+            exception.printStackTrace();
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
 
         getLogger().info("Database loaded! Path: \"" + databaseFile.getAbsolutePath() + "\", do not forget that the name of the database can be changed in \"config.yml\"");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new DatabaseCleaner(database, getServer().getWorlds()), 0, 80);
 
-        PlayerBlockInteractionListener playerBlockInteractionListener = new PlayerBlockInteractionListener(database);
-
-        getServer().getPluginManager().registerEvents(playerBlockInteractionListener, this);
+        getServer().getPluginManager().registerEvents(new PlayerBlockInteractionListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerMagicStickListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerGuardRemoverListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerGuardAdditionListener(), this);
@@ -64,6 +73,9 @@ public class Main extends JavaPlugin {
         getServer().getPluginCommand("remove-block-guard").setTabCompleter(new RemoveBlockGuardCompleter());
 
         getServer().getPluginCommand("my-blocks").setExecutor(new MyBlocksCommand());
+
+        getServer().getPluginCommand("change-plugin-language").setExecutor(new ChangePluginLangCommand());
+        getServer().getPluginCommand("change-plugin-language").setTabCompleter(new ChangePluginLangCommandTabCompleter());
     }
 
     @Override
@@ -72,14 +84,14 @@ public class Main extends JavaPlugin {
         getLogger().info("The database closed! Bye-bye ^_^");
     }
 
-    private static InventoryManager inventoryManager;
     private static Database database;
-
-    public static InventoryManager getInventoryManager() {
-        return inventoryManager;
-    }
+    private static LocalizationManager localizationManager;
 
     public static Database getDatabase() {
         return database;
+    }
+
+    public static LocalizationManager getLocalizationManager() {
+        return localizationManager;
     }
 }

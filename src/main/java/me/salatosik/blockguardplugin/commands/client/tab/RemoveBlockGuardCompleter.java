@@ -1,4 +1,4 @@
-package me.salatosik.blockguardplugin.commands.tab;
+package me.salatosik.blockguardplugin.commands.client.tab;
 
 import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.core.Database;

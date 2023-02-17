@@ -3,6 +3,7 @@ package me.salatosik.blockguardplugin.listeners;
 import me.salatosik.blockguardplugin.Main;
 import me.salatosik.blockguardplugin.Vars;
 import me.salatosik.blockguardplugin.core.Database;
+import me.salatosik.blockguardplugin.core.LocalizationManager;
 import me.salatosik.blockguardplugin.enums.MagicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,11 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerBlockInteractionListener implements Listener {
-    public PlayerBlockInteractionListener(Database database) {
-        this.database = database;
-    }
-
-    private final Database database;
+    private final Database database = Main.getDatabase();
+    private final LocalizationManager LANG = Main.getLocalizationManager();
 
     private boolean checkForRight(PlayerBlock playerBlock) {
         List<PlayerBlock> playerBlocks = database.getPlayerBlocks();
@@ -45,7 +43,7 @@ public class PlayerBlockInteractionListener implements Listener {
             for(PlayerBlock playerBlock: database.getPlayerBlocks()) {
                 if(playerBlock.x == block.getX() & playerBlock.y == block.getY() & playerBlock.z == block.getZ() && !playerBlock.uuid.equals(player.getUniqueId().toString())) {
                     event.setCancelled(true);
-                    player.sendMessage(ChatColor.YELLOW + "You cannot place a block here");
+                    player.sendMessage(ChatColor.RED + LANG.getKey("player-block-interaction-listener.cannot-place-block"));
                     return;
                 }
             }
@@ -60,7 +58,7 @@ public class PlayerBlockInteractionListener implements Listener {
 
         if(checkForRight(playerBlock)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You can't hack this block.");
+            event.getPlayer().sendMessage(ChatColor.YELLOW + LANG.getKey("player-block-interaction-listener.can`t-hack-block"));
 
         } else database.removePlayerBlock(playerBlock);
     }

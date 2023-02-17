@@ -1,4 +1,4 @@
-database-name-file: "database.db"
+database-name-file: database.db
 
 allows-in-worlds:
   world: true
@@ -6,3 +6,5 @@ allows-in-worlds:
   ender: false
 
 maximum-protected-block: 10
+
+plugin-language: eng

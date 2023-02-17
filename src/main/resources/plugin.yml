@@ -1,6 +1,6 @@
 name: block-guard
 description: makes it possible to protect players blocks in case of an attempt to destroy them.
-version: 1.1
+version: 1.2
 author: Salatosik
 api-version: 1.12
 database: true
@@ -26,3 +26,7 @@ commands:
     usage: /my-blocks
     aliases:
       - mb
+
+  change-plugin-language:
+    description: Allows you to change the language of the plugin
+    usage: /change-plugin-language <language>
