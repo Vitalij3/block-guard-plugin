@@ -1,6 +1,6 @@
 name: block-guard
 description: makes it possible to protect players blocks in case of an attempt to destroy them.
-version: 1.2
+version: 1.3
 author: Salatosik
 api-version: 1.12
 database: true

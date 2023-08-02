@@ -80,8 +80,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if(database != null) database.closeConnection();
-        getLogger().info("The database closed! Bye-bye ^_^");
+        // Yea
     }
 
     private static Database database;
